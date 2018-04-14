@@ -78,7 +78,17 @@ axios.interceptors.response.use(response => {
     }
     Message.error(error.message);
     return Promise.resolve(error.response);
-})
+});
+
+function handlerFail(response, failFun) {
+    let resCode = response.resCode;
+    if ('200001' === resCode || '200002' === resCode
+        || '200003' === resCode || '200004' === resCode) {
+        vue.$router.push('/login');
+    } else {
+        failFun(response);
+    }
+}
 
 
 export default {
@@ -93,11 +103,12 @@ export default {
                     cancel = c;
                 })
             }).then(res => {
-                if (res.data.success){
+                console.log(res);
+                /*if (res.data.success){
                     successFun(res.data);
                 } else {
-                    failFun(res.data);
-                }
+                    handlerFail(res.data, failFun);
+                }*/
             });
         });
     },
@@ -115,7 +126,7 @@ export default {
                 if (res.data.success) {
                     successFun(res.data);
                 } else {
-                    failFun(res.data);
+                    handlerFail(res.data, failFun);
                 }
             });
         });

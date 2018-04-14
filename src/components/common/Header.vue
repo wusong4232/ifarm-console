@@ -9,7 +9,7 @@
                    <img src="../../../static/img/loginOut.png" alt="" width="25">
                 </span>
                 <el-dropdown-menu slot="dropdown" placement="top-end">
-                    <el-dropdown-item command="loginout">退出</el-dropdown-item>
+                    <el-dropdown-item command="logout">退出</el-dropdown-item>
                 </el-dropdown-menu>
             </el-dropdown>
         </div>
@@ -21,7 +21,7 @@
     export default {
         data() {
             return {
-                name: 'yihoo'
+                name: ''
             }
         },
         computed:{
@@ -32,9 +32,12 @@
         },
         methods:{
             handleCommand(command) {
-                if(command == 'loginout'){
+                if(command == 'logout'){
                     localStorage.removeItem('ms_username');
-                    this.$router.push('/login');
+                    this.$http.get('/logout',null,response => {
+                        console.log(response);
+                        this.$router.push('/login');
+                    });
                 }
             },
             autoTime(){

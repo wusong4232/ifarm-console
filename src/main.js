@@ -14,7 +14,7 @@ Vue.config.productionTip = false;
 Vue.use(ElementUI);
 Vue.use(VueCookie);
 
-new Vue({
+const vue = new Vue({
     router,
     store,
     render: h => h(App),
