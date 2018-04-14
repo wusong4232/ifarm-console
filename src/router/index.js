@@ -10,11 +10,16 @@ export default new Router({
             redirect: '/login'
         },
         {
-            path: '/',
+            path: '/home',
             component: resolve => require(['../components/common/Home.vue'], resolve),
             children:[
                 {
                     path: '/',
+                    name:"首页",
+                    component: resolve => require(['../components/page/index.vue'], resolve)
+                },
+                {
+                    path: '/generalManagement',
                     name:"综合管理",
                     component: resolve => require(['../components/page/Readme.vue'], resolve)
                 },

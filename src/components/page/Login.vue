@@ -45,7 +45,7 @@
                     password: self.ruleForm.password
                 };
                 this.$http.post('/login', params, response => {
-                    self.$router.push('/generalManagement');
+                    self.$router.push('/home');
                 },fail =>{
                     self.tips = fail.resMsg;
                 });

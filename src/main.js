@@ -15,5 +15,13 @@ Vue.use(ElementUI);
 new Vue({
     router,
     store,
-    render: h => h(App)
+    render: h => h(App),
+    mounted() {
+        window.addEventListener('beforeunload', this.handleEvent);
+    },
+    methods:{
+        handleEvent:function () {
+            alert(1);
+        }
+    }
 }).$mount('#app');
