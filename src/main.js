@@ -17,11 +17,15 @@ new Vue({
     store,
     render: h => h(App),
     mounted() {
-        window.addEventListener('beforeunload', this.handleEvent);
+        this.$nextTick(function () {
+            window.addEventListener('beforeunload', this.windowRefresh());
+        })
     },
-    methods:{
-        handleEvent:function () {
-            alert(1);
+    methods: {
+        windowRefresh: function () {
+            this.$store.commit('add_tabs', {route: '/home', name: '首页'});
+            this.$store.commit('set_active_index', '/home');
+            this.$router.push('/home');
         }
     }
 }).$mount('#app');

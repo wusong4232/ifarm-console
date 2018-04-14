@@ -35,8 +35,7 @@
             },
             tabRemove (targetName) {
                 // 首页不可删除
-                console.log(targetName);
-                if(targetName == '/generalManagement') {
+                if(targetName == '/home') {
                     return;
                 }
                 this.$store.commit('delete_tabs', targetName);
@@ -49,9 +48,6 @@
                         this.$router.push({path: '/'});
                     }
                 }
-            },
-            leaving:function(){
-                alert(1);
             }
         },
         computed: {
@@ -82,7 +78,7 @@
                     this.$store.commit('set_active_index', '/' + to.path.split('/')[1]);
                 }
             }
-        },
+        }/*,
         mounted(){
             console.log(this.$route.path);
             if(this.$route.path!=='/home'){
@@ -94,14 +90,14 @@
                 this.$store.commit('set_active_index', '/home');
                 this.$router.push('/home');
             }
-        },
-        ready:function(){
-            window.onbeforeunload = this.leaving;
 
-
-        }
+        }*/
     }
 </script>
-<style scoped>
-
+<style lang="less">
+    .headerTabs{
+        div.el-tabs__nav>div.el-tabs__item:nth-child(1) span{
+            display: none !important;
+        }
+    }
 </style>

@@ -51,6 +51,16 @@ module.exports = {
           name: utils.assetsPath('img/[name].[hash:7].[ext]')
         }
       },
+        {
+            test:/\.less$/,
+            use:[{
+                loader:"style-loader"
+            },{
+                loader: "css-loader"
+            },{
+                loader:"less-loader"
+            }]
+        },
       {
         test: /\.(woff2?|eot|ttf|otf)(\?.*)?$/,
         loader: 'url-loader',
@@ -67,4 +77,4 @@ module.exports = {
     //       manifest: require('./vendor-manifest.json')
     //     })
     // ]
-}
+};

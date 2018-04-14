@@ -91,9 +91,11 @@
                 if(process.env.NODE_ENV === 'development'){
                     self.url = '/ms/table/list';
                 };
+/*
                 self.$axios.post(self.url, {page:self.cur_page}).then((res) => {
                     self.tableData = res.data.list;
                 })
+*/
             },
             search(){
                 this.is_search = true;
