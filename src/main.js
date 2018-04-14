@@ -7,10 +7,12 @@ import store from "./store/index.js"
 // import '../static/css/theme-green/index.css';       // 浅绿色主题
 import "babel-polyfill";
 import apiAxios from './apiaxios';
+import VueCookie from "vue-cookie";
 
 Vue.prototype.$http = apiAxios;
 Vue.config.productionTip = false;
 Vue.use(ElementUI);
+Vue.use(VueCookie);
 
 new Vue({
     router,
@@ -23,9 +25,22 @@ new Vue({
     },
     methods: {
         windowRefresh: function () {
+            if(this.$route.path==="/"){
+                this.$cookie.set('userName',"");
+            }
             this.$store.commit('add_tabs', {route: '/home', name: '首页'});
             this.$store.commit('set_active_index', '/home');
-            this.$router.push('/home');
+            if(this.$route.path!=="/"){
+                this.$router.push('/home');
+            }
+/*
+            if(this.$router!=="/login"){
+                this.$store.commit('add_tabs', {route: '/home', name: '首页'});
+                this.$store.commit('set_active_index', '/home');
+                this.$router.push('/home');
+            }
+*/
+
         }
     }
 }).$mount('#app');

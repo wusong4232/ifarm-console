@@ -65,6 +65,7 @@
         },
         watch: {
             '$route'(to) {
+                console.log(to);
                 let flag = false;
                 for (let option of this.options ) {
                     if (option.name === to.name) {

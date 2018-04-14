@@ -45,8 +45,10 @@
                     password: self.ruleForm.password
                 };
                 this.$http.post('/login', params, response => {
+                    self.$cookie.set('userName',response.result.userName,{expires:"30m"});
                     self.$router.push('/home');
                 },fail =>{
+                    console.log(fail);
                     self.tips = fail.resMsg;
                 });
             }

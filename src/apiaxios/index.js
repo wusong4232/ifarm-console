@@ -12,7 +12,7 @@ axios.defaults.baseURL = Config.serviceUrl;
 axios.defaults.headers = {
     'Authorization': localStorage.token,// 若是有做鉴权token , 就给头部带上token
     'Content-Type': 'application/json;charset=utf-8'
-}
+};
 axios.defaults.timeout = 10000;
 //请求拦截器
 axios.interceptors.request.use(config => {
