@@ -35,7 +35,7 @@
             },
             tabRemove (targetName) {
                 // 首页不可删除
-                if(targetName == '/home') {
+                if(targetName == '/home/index') {
                     return;
                 }
                 this.$store.commit('delete_tabs', targetName);
@@ -43,9 +43,10 @@
                     // 设置当前激活的路由
                     if (this.options && this.options.length >= 1) {
                         this.$store.commit('set_active_index', this.options[this.options.length-1].route);
-                        this.$router.push({path: this.activeIndex});
+                        // this.$router.push({path: this.activeIndex});
+                        this.$router.push(this.activeIndex);
                     } else {
-                        this.$router.push({path: '/'});
+                        this.$router.push('/home/index');
                     }
                 }
             }
@@ -65,19 +66,19 @@
         },
         watch: {
             '$route'(to) {
-                console.log(to);
                 let flag = false;
                 for (let option of this.options ) {
                     if (option.name === to.name) {
                         flag = true;
-                        this.$store.commit('set_active_index', '/' + to.path.split('/')[1]);
+                        this.$store.commit('set_active_index', to.path);
                         break
                     }
                 }
                 if (!flag) {
-                    this.$store.commit('add_tabs', {route: '/' + to.path.split('/')[1], name: to.name});
-                    this.$store.commit('set_active_index', '/' + to.path.split('/')[1]);
+                    this.$store.commit('add_tabs', {route:to.path, name: to.name});
+                    this.$store.commit('set_active_index', to.path);
                 }
+
             }
         }/*,
         mounted(){

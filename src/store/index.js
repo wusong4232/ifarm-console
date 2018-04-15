@@ -10,8 +10,9 @@ Vue.use(Vuex);
 const store = new Vuex.Store({
     state: {
         options: [],
-        activeIndex: '/home',
-        userInfo: {}
+        activeIndex: '/home/index',
+        userInfo: {},
+        loadSuccess:{}
     },
     mutations: {
         // 添加tabs
@@ -36,6 +37,9 @@ const store = new Vuex.Store({
         // 设置详情信息
         save_detail_info (state, info) {
             this.state.userInfo = info;
+        },
+        add_loadSuccess_info(state,obj){
+            this.state.loadSuccess=obj;
         }
     }
 });

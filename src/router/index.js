@@ -14,32 +14,32 @@ export default new Router({
             component: resolve => require(['../components/common/Home.vue'], resolve),
             children:[
                 {
-                    path: '/',
+                    path: 'index',
                     name:"首页",
                     component: resolve => require(['../components/page/index.vue'], resolve)
                 },
                 {
-                    path: '/generalManagement',
+                    path: 'generalManagement',
                     name:"综合管理",
                     component: resolve => require(['../components/page/Readme.vue'], resolve)
                 },
                 {
-                    path: '/wordManagement',
+                    path: 'wordManagement',
                     name:"词条管理",
                     component: resolve => require(['../components/page/BaseTable.vue'], resolve)
                 },
                 {
-                    path: '/userManagement',
+                    path: 'userManagement',
                     name:"用户管理",
                     component: resolve => require(['../components/page/VueTable.vue'], resolve)     // vue-datasource组件
                 },
                 {
-                    path: '/roleManagement',
+                    path: 'roleManagement',
                     name:"角色管理",
                     component: resolve => require(['../components/page/BaseForm.vue'], resolve)
                 },
                 {
-                    path: '/resourceManagement',
+                    path: 'resourceManagement',
                     name:"资源管理",
                     component: resolve => require(['../components/page/VueEditor.vue'], resolve)    // Vue-Quill-Editor组件
                 }

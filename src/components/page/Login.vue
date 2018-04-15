@@ -45,10 +45,19 @@
                     password: self.ruleForm.password
                 };
                 this.$http.post('/login', params, response => {
+                    console.log(response);
                     self.$cookie.set('userName',response.result.userName,{expires:"30m"});
-                    self.$router.push('/home');
+                    this.$store.commit("add_loadSuccess_info",response);
+                    let localStorageStr=JSON.stringify(response);
+                    console.log(localStorageStr);
+                    localStorage.loadSuccessInfo=localStorageStr;
+                    self.$router.push('/home/index');
                 },fail =>{
                     console.log(fail);
+                    let localStorageStr=JSON.stringify(fail);
+                    localStorage.loadSuccessInfo=localStorageStr;
+                    let localStorageObj=JSON.parse(localStorage.getItem("loadSuccessInfo"));
+                    this.$store.commit("add_loadSuccess_info",localStorageObj);
                     self.tips = fail.resMsg;
                 });
             }
