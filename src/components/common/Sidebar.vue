@@ -1,28 +1,52 @@
 <template>
+    <!--
+        <div class="sidebar">
+            <el-menu :default-active="onRoutes" class="el-menu-vertical-demo" background-color="#324157" text-color="#fff" unique-opened router>
+                <template v-for="item in items">
+                    <template v-if="item.subs">
+                        <el-submenu :index="item.index">
+                            <template slot="title"><i :class="item.icon"></i>{{ item.title }}</template>
+                            <el-menu-item v-for="(subItem,i) in item.subs" :key="i" :index="subItem.index">{{ subItem.title }}
+                            </el-menu-item>
+                        </el-submenu>
+                    </template>
+                    <template v-else>
+                        <el-menu-item :index="item.index">
+                            <i :class="item.icon"></i>{{ item.title }}
+                        </el-menu-item>
+                    </template>
+                </template>
+            </el-menu>
+        </div>
+    -->
+
     <div class="sidebar">
-        <el-menu :default-active="onRoutes" class="el-menu-vertical-demo" background-color="#324157" text-color="#fff" unique-opened router>
-            <template v-for="item in items">
-                <template v-if="item.subs">
-                    <el-submenu :index="item.index">
-                        <template slot="title"><i :class="item.icon"></i>{{ item.title }}</template>
-                        <el-menu-item v-for="(subItem,i) in item.subs" :key="i" :index="subItem.index">{{ subItem.title }}
+        <el-menu :default-active="onRoutes" class="el-menu-vertical-demo" background-color="#324157" text-color="#fff"
+                 unique-opened router>
+            <template v-for="item in itemsCopy">
+                <template v-if="item.childrenNode.length">
+                    <el-submenu :index="item.tid.toString()">
+                        <template slot="title"><i :class="item.nodeIcon"></i>{{ item.resourceName }}</template>
+                        <el-menu-item v-for="(subItem,i) in item.childrenNode" :key="i" :index="subItem.resourceCode">{{ subItem.resourceName }}
                         </el-menu-item>
                     </el-submenu>
                 </template>
                 <template v-else>
-                    <el-menu-item :index="item.index">
-                        <i :class="item.icon"></i>{{ item.title }}
+                    <el-menu-item :index="item.resourceCode">
+                        <i :class="item.nodeIcon"></i>{{ item.resourceName }}
                     </el-menu-item>
                 </template>
             </template>
         </el-menu>
     </div>
+
 </template>
 
 <script>
     export default {
         data() {
             return {
+/*
                 items: [
                     {
                         icon: 'el-icon-setting',
@@ -60,31 +84,38 @@
                         ]
                     }
                 ]
+*/
             }
         },
-        computed:{
-            onRoutes(){
-                return this.$route.path.replace('/','');
+        computed: {
+            onRoutes() {
+                return this.$route.path.split('/')[2];
+            },
+            itemsCopy(){
+                console.log(this.$store.state.forgeData.result.menuResources[0].childrenNode[2].childrenNode.length);
+                return this.$store.state.forgeData.result.menuResources[0].childrenNode;
             }
         }
     }
 </script>
 
 <style>
-    .sidebar{
+    .sidebar {
         display: block;
         position: absolute;
         width: 250px;
         left: 0;
         top: 70px;
-        bottom:0;
+        bottom: 0;
         background: #2E363F;
     }
+
     .sidebar > ul {
-        height:100%;
+        height: 100%;
     }
-    .el-menu-item, .el-submenu__title{
-        height:45px !important;
-        line-height:45px !important;
+
+    .el-menu-item, .el-submenu__title {
+        height: 45px !important;
+        line-height: 45px !important;
     }
 </style>
