@@ -8,6 +8,7 @@ import store from "./store/index.js"
 import "babel-polyfill";
 import apiAxios from './apiaxios';
 import VueCookie from "vue-cookie";
+import "./permission";
 
 Vue.prototype.$http = apiAxios;
 Vue.config.productionTip = false;
