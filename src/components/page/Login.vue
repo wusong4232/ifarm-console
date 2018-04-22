@@ -44,18 +44,21 @@
                     userName: self.ruleForm.username,
                     password: self.ruleForm.password
                 };
-                self.$cookie.set('userName',"admin",{expires:"30m"});
-                self.$router.push('/home/index');
+                // self.$cookie.set('userName',"admin",{expires:"30m"});
+                // self.$router.push('/home/index');
 
-/*
+                // this.$http.get('userMenu');
+
                 this.$http.post('/login', params, response => {
                     console.log(response);
-                    self.$cookie.set('userName',response.result.userName,{expires:"30m"});
-                    this.$store.commit("add_loadSuccess_info",response);
-                    let localStorageStr=JSON.stringify(response);
-                    console.log(localStorageStr);
-                    localStorage.loadSuccessInfo=localStorageStr;
-                    self.$router.push('/home/index');
+                    // self.$cookie.set('userName',response.result.userName,{expires:"30m"});
+                    // this.$store.commit("add_loadSuccess_info",response);
+                    // let localStorageStr=JSON.stringify(response);
+                    // console.log(localStorageStr);
+                    // localStorage.loadSuccessInfo=localStorageStr;
+                    sessionStorage.token = response.result;
+                    console.log("token:" + localStorage.token);
+                    this.getUserInfo();
                 },fail =>{
                     console.log(fail);
                     let localStorageStr=JSON.stringify(fail);
@@ -64,7 +67,14 @@
                     this.$store.commit("add_loadSuccess_info",localStorageObj);
                     self.tips = fail.resMsg;
                 });
-*/
+            } ,
+            getUserInfo: function () {
+                this.$http.get("/userInfo",null,response => {
+                    console.log(response);
+                },fail => {
+                    console.log(fail);
+                })
+                self.$router.push('/home/index');
             }
         }
     }

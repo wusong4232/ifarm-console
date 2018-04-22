@@ -1,4 +1,5 @@
 //引入axios
+import Vue from 'vue';
 import axios from 'axios';
 import Config from '../config';
 import {Message} from 'element-ui';
@@ -8,14 +9,17 @@ let CancelToken = axios.CancelToken;
 
 
 axios.defaults.baseURL = Config.serviceUrl;
+//携带cookie
+// axios.defaults.withCredentials=true;
 //设置默认请求头
 axios.defaults.headers = {
-    'Authorization': localStorage.token,// 若是有做鉴权token , 就给头部带上token
     'Content-Type': 'application/json;charset=utf-8'
 };
 axios.defaults.timeout = 10000;
 //请求拦截器
 axios.interceptors.request.use(config => {
+    // 若是有做鉴权token , 就给头部带上token
+    config.headers.Authorization = sessionStorage.token;
     //发起请求时，取消掉当前正在进行的相同请求
     if (promiseArr[config.url]) {
         promiseArr[config.url]('操作取消');
@@ -84,7 +88,7 @@ function handlerFail(response, failFun) {
     let resCode = response.resCode;
     if ('200001' === resCode || '200002' === resCode
         || '200003' === resCode || '200004' === resCode) {
-        vue.$router.push('/login');
+        Vue.$router.push('/login');
     } else {
         failFun(response);
     }
@@ -104,11 +108,11 @@ export default {
                 })
             }).then(res => {
                 console.log(res);
-                /*if (res.data.success){
+                if (res.data.success){
                     successFun(res.data);
                 } else {
                     handlerFail(res.data, failFun);
-                }*/
+                }
             });
         });
     },
