@@ -56,7 +56,7 @@
                     // let localStorageStr=JSON.stringify(response);
                     // console.log(localStorageStr);
                     // localStorage.loadSuccessInfo=localStorageStr;
-                    sessionStorage.token = response.result;
+                    localStorage.Authorization = response.result.Authorization;
                     console.log("token:" + localStorage.token);
                     this.getUserInfo();
                 },fail =>{
