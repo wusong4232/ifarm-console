@@ -21,27 +21,27 @@ export default new Router({
                 {
                     path: 'generalManagement',
                     name:"综合管理",
-                    component: resolve => require(['../components/page/Readme.vue'], resolve)
+                    component: resolve => require(['../components/page/before/Readme.vue'], resolve)
                 },
                 {
                     path: 'wordManagement',
                     name:"词条管理",
-                    component: resolve => require(['../components/page/BaseTable.vue'], resolve)
+                    component: resolve => require(['../components/page/before/BaseTable.vue'], resolve)
                 },
                 {
                     path: 'userManagement',
                     name:"用户管理",
-                    component: resolve => require(['../components/page/VueTable.vue'], resolve)     // vue-datasource组件
+                    component: resolve => require(['../components/page/before/VueTable.vue'], resolve)     // vue-datasource组件
                 },
                 {
                     path: 'roleManagement',
                     name:"角色管理",
-                    component: resolve => require(['../components/page/BaseForm.vue'], resolve)
+                    component: resolve => require(['../components/page/before/BaseForm.vue'], resolve)
                 },
                 {
                     path: 'resourceManagement',
                     name:"资源管理",
-                    component: resolve => require(['../components/page/VueEditor.vue'], resolve)    // Vue-Quill-Editor组件
+                    component: resolve => require(['../components/page/before/VueEditor.vue'], resolve)    // Vue-Quill-Editor组件
                 }
             ]
         },

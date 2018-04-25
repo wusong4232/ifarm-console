@@ -224,11 +224,11 @@ const store = new Vuex.Store({
     },
     mutations: {
         // 添加tabs
-        add_tabs (state, data) {
+        addTabs (state, data) {
             this.state.options.push(data);
         },
         // 删除tabs
-        delete_tabs (state, route) {
+        deleteTabs (state, route) {
             let index = 0;
             for (let option of state.options) {
                 if (option.route === route) {
@@ -239,15 +239,12 @@ const store = new Vuex.Store({
             this.state.options.splice(index, 1);
         },
         // 设置当前激活的tab
-        set_active_index (state, index) {
+        setActiveIndex (state, index) {
             this.state.activeIndex = index;
         },
         // 设置详情信息
-        save_detail_info (state, info) {
+        saveUserInfo (state, info) {
             this.state.userInfo = info;
-        },
-        add_loadSuccess_info(state,obj){
-            this.state.loadSuccess=obj;
         }
     }
 });
