@@ -59,8 +59,10 @@
                         let userInfo = response.result.userInfoDTO;
                         let userMenu = response.result.userMenus;
                         self.$cookie.set('userName',userInfo.userName,{expires:"30m"});
-                        this.$store.commit("saveUserInfo",userInfo);
-                        this.$store.commit("saveUserMenu",userMenu);
+                        self.$cookie.set('userInfo', JSON.stringify(userInfo));
+                        self.$cookie.set('userMenu', JSON.stringify(userMenu));
+                        this.$store.commit("saveUserInfo", userInfo);
+                        this.$store.commit("saveUserMenu", userMenu);
                         self.$router.push('/home/index');
                     }
                 },fail => {

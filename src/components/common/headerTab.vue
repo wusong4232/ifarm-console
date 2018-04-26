@@ -25,12 +25,6 @@
             tabClick (tab) {
                 let path = this.activeIndex;
                 // 用户详情页的时候，对应了二级路由，需要拼接添加第二级路由
-/*
-                console.log(path);
-                if (this.activeIndex === '/userInfo') {
-                    path = this.activeIndex + '/' + this.$store.state.userInfo.name;
-                }
-*/
                 this.$router.push(path);
             },
             tabRemove (targetName) {
@@ -38,12 +32,11 @@
                 if(targetName == '/home/index') {
                     return;
                 }
-                this.$store.commit('delete_tabs', targetName);
+                this.$store.commit('deleteTabs', targetName);
                 if (this.activeIndex === targetName) {
                     // 设置当前激活的路由
                     if (this.options && this.options.length >= 1) {
-                        this.$store.commit('set_active_index', this.options[this.options.length-1].route);
-                        // this.$router.push({path: this.activeIndex});
+                        this.$store.commit('setActiveIndex', this.options[this.options.length-1].route);
                         this.$router.push(this.activeIndex);
                     } else {
                         this.$router.push('/home/index');
@@ -67,33 +60,20 @@
         watch: {
             '$route'(to) {
                 let flag = false;
-                for (let option of this.options ) {
+                for (let option of this.options) {
                     if (option.name === to.name) {
                         flag = true;
-                        this.$store.commit('set_active_index', to.path);
+                        this.$store.commit('setActiveIndex', to.path);
                         break
                     }
                 }
                 if (!flag) {
-                    this.$store.commit('add_tabs', {route:to.path, name: to.name});
-                    this.$store.commit('set_active_index', to.path);
+                    this.$store.commit('addTabs', {route: to.path, name: to.name});
+                    this.$store.commit('setActiveIndex', to.path);
                 }
 
             }
-        }/*,
-        mounted(){
-            console.log(this.$route.path);
-            if(this.$route.path!=='/home'){
-                this.$store.commit('add_tabs',{route: '/home', name: '首页'});
-                this.$store.commit('add_tabs', {route: this.$route.path , name: this.$route.name });
-                this.$store.commit('set_active_index', this.$route.path);
-            }else {
-                this.$store.commit('add_tabs', {route: '/home', name: '首页'});
-                this.$store.commit('set_active_index', '/home');
-                this.$router.push('/home');
-            }
-
-        }*/
+        }
     }
 </script>
 <style lang="less">

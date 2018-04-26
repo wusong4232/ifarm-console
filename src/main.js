@@ -39,6 +39,7 @@ const vue = new Vue({
     },
     methods: {
         windowRefresh: function () {
+            this.$http.get('/userInfo');
             var domRoute = window.location.hash.substr(1);
             console.log(domRoute);
             //为什么刷新后这里的this.$route.path始终是"/"呢，所以先用dom方法判断
@@ -46,6 +47,10 @@ const vue = new Vue({
                 this.$cookie.set('userName',"");
             }
             if(domRoute!=="/"&&domRoute!=="/login"){
+                let userInfo = this.$cookie.get('userInfo');
+                let userMenu = this.$cookie.get('userMenu');
+                this.$store.commit("saveUserInfo", JSON.parse(userInfo));
+                this.$store.commit("saveUserMenu", JSON.parse(userMenu));
                 this.$store.commit('addTabs', {route: '/home/index', name: '首页'});
                 this.$store.commit('setActiveIndex', '/home/index');
                 this.$router.push('/home/index');

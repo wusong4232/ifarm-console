@@ -26,7 +26,7 @@
         },
         computed:{
             username(){
-                let username = localStorage.getItem('ms_username');
+                let username = 'admin';
                 return username ? username : this.name;
             }
         },
@@ -35,7 +35,6 @@
                 if(command == 'logout'){
                     localStorage.removeItem('ms_username');
                     this.$http.get('/logout',null,response => {
-                        console.log(response);
                         this.$router.push('/login');
                     });
                 }

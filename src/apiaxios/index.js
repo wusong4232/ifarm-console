@@ -4,6 +4,7 @@ import axios from 'axios';
 import Config from '../config';
 import Tools from '../tools';
 import {Message} from 'element-ui';
+import router from '../router';
 
 let cancel,promiseArr = {};
 let CancelToken = axios.CancelToken;
@@ -20,9 +21,8 @@ axios.defaults.timeout = 10000;
 //请求拦截器
 axios.interceptors.request.use(config => {
     // 若是有做鉴权token , 就给头部带上token
-    console.log(config.url.indexOf('/login') > 0);
     if (config.url.indexOf('/login') <= 0) {
-        config.headers.Authorization = localStorage.Authorization;
+        // config.headers.Authorization = localStorage.Authorization;
         config.headers.JSESSIONID = localStorage.token;
     }
     //发起请求时，取消掉当前正在进行的相同请求
@@ -96,8 +96,8 @@ function handlerFail(response, failFun) {
     let resCode = response.code;
     if ('200001' === resCode || '200002' === resCode
         || '200003' === resCode || '200004' === resCode) {
-        //TODO 登录失败 验证失败等处理
-
+        // 登录失败 验证失败等处理
+        router.push('/login');
     } else {
         failFun(response);
     }
