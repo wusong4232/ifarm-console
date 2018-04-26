@@ -53,16 +53,19 @@
                 });
             } ,
             getUserInfo: function () {
-                this.$http.get("/userInfo",null,response => {
-                    self.$cookie.set('userName',response.result.userName,{expires:"30m"});
-                    this.$store.commit("add_loadSuccess_info",response);
-                    let localStorageStr=JSON.stringify(response);
-                    console.log(localStorageStr);
-                    localStorage.loadSuccessInfo=localStorageStr;
+                let self = this;
+                self.$http.get("/userInfo",null,response => {
+                    if (self.$tools.isNotEmpty(response.result)) {
+                        let userInfo = response.result.userInfoDTO;
+                        let userMenu = response.result.userMenus;
+                        self.$cookie.set('userName',userInfo.userName,{expires:"30m"});
+                        this.$store.commit("saveUserInfo",userInfo);
+                        this.$store.commit("saveUserMenu",userMenu);
+                        self.$router.push('/home/index');
+                    }
                 },fail => {
                     console.log(fail);
                 })
-                self.$router.push('/home/index');
             }
         }
     }

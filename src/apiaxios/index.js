@@ -2,6 +2,7 @@
 import Vue from 'vue';
 import axios from 'axios';
 import Config from '../config';
+import Tools from '../tools';
 import {Message} from 'element-ui';
 
 let cancel,promiseArr = {};
@@ -35,7 +36,9 @@ axios.interceptors.request.use(config => {
 
 //响应拦截器即异常处理
 axios.interceptors.response.use(response => {
-    localStorage.token = response.data.token;
+    if (!Tools.isEmpty(response.data)){
+        localStorage.token = response.data.token;
+    }
     return response;
 }, error => {
     if (error && error.response) {
@@ -87,10 +90,11 @@ axios.interceptors.response.use(response => {
 });
 
 function handlerFail(response, failFun) {
-    let resCode = response.resCode;
+    let resCode = response.code;
     if ('200001' === resCode || '200002' === resCode
         || '200003' === resCode || '200004' === resCode) {
-        Vue.$router.push('/login');
+        //TODO 登录失败 验证失败等处理
+
     } else {
         failFun(response);
     }

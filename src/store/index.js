@@ -12,7 +12,7 @@ const store = new Vuex.Store({
         options: [],
         activeIndex: '/home/index',
         userInfo: {},
-        loadSuccess:{},
+        userMenu:{},
         forgeData:{
             "success": true,
             "resCode": "100000",
@@ -245,6 +245,15 @@ const store = new Vuex.Store({
         // 设置详情信息
         saveUserInfo (state, info) {
             this.state.userInfo = info;
+        },
+        removeUserInfo(state) {
+            this.state.userInfo = null;
+        },
+        saveUserMenu(state, menus) {
+            this.state.userMenu = menus;
+        },
+        removeUserMenu(state) {
+            this.state.userMenu = null;
         }
     }
 });
