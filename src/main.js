@@ -45,11 +45,9 @@ const vue = new Vue({
             if(domRoute==="/"||domRoute==="/login"){
                 this.$cookie.set('userName',"");
             }
-            this.$store.commit('addTabs', {route: '/home/index', name: '首页'});
-            this.$store.commit('setActiveIndex', '/home/index');
             if(domRoute!=="/"&&domRoute!=="/login"){
-                localStorageObj=JSON.parse(localStorage.getItem("loadSuccessInfo"));
-                this.$store.commit("add_loadSuccess_info",localStorageObj);
+                this.$store.commit('addTabs', {route: '/home/index', name: '首页'});
+                this.$store.commit('setActiveIndex', '/home/index');
                 this.$router.push('/home/index');
             }
         }
