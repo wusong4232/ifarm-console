@@ -22,7 +22,7 @@ axios.defaults.timeout = 10000;
 axios.interceptors.request.use(config => {
     // 若是有做鉴权token , 就给头部带上token
     if (config.url.indexOf('/login') <= 0) {
-        // config.headers.Authorization = localStorage.Authorization;
+        config.headers.Authorization = localStorage.Authorization;
         config.headers.JSESSIONID = localStorage.token;
     }
     //发起请求时，取消掉当前正在进行的相同请求

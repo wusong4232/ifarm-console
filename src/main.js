@@ -39,7 +39,6 @@ const vue = new Vue({
     },
     methods: {
         windowRefresh: function () {
-            this.$http.get('/userInfo');
             var domRoute = window.location.hash.substr(1);
             console.log(domRoute);
             //为什么刷新后这里的this.$route.path始终是"/"呢，所以先用dom方法判断
