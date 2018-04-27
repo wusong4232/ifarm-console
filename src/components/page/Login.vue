@@ -63,51 +63,48 @@
                         self.$cookie.set('userMenu', JSON.stringify(userMenu));
                         this.$store.commit("saveUserInfo", userInfo);
                         this.$store.commit("saveUserMenu", userMenu);
+                        this.addUserRouters(userMenu);
                         //添加路由
-                        this.addUserRoutes(userMenu);
                         self.$router.push('/home/index');
+
                     }
                 },fail => {
                     console.log(fail);
                 })
             },
-            addUserRoutes : function (userMenus) {
-                let menus = new Array();
+            addUserRouters : function (userMenus) {
+                console.log(userMenus);
                 let menu = {};
-                for (let item in userMenus[0].childrenNode) {
-                    let subMenus = new Array();
+                for (let i = 0; i < userMenus[0].childrenNode.length; i++) {
+                    let item = userMenus[0].childrenNode[i];
                     let subMenu = {};
                     if (item.childrenNode) {
-                        for (let subItem in item.childrenNode) {
+                        for (let j = 0; j < item.childrenNode.length; j++) {
+                            let subItem = item.childrenNode[j];
+                            let subComponent = './before/'+subItem.resourceCode+'.vue';
                             subMenu = {
-                                path : item.entryUrl,
-                                name : item.resourceName,
-                                component : resolve => require(['../page/before/'+item.resourceName+'.vue'], resolve)
+                                path : subItem.entryUrl,
+                                name : subItem.resourceName,
+                                component : resolve => require([subComponent], resolve)
                             }
-                            subMenus.push(subMenu);
+                            this.$router.options.routes[2].children.push(subMenu);
                         }
                     }
+                    let dyComponent = './before/'+item.resourceCode+'.vue';
                     menu = {
                         path : item.entryUrl,
                         name : item.resourceName,
-                        component : resolve => require(['../page/before/'+item.resourceName+'.vue'], resolve),
-                        children : subMenus
+                        component : resolve => require([dyComponent], resolve)
                     }
-                    menus.push(menu);
+                    this.$router.options.routes[2].children.push(menu);
                 }
-                menu = {
-                    path: 'index',
-                    name:"首页",
-                    component: resolve => require(['../page/index.vue'], resolve)
-                };
-                menus.push(menu);
-                let allMenus = {
-                    path: '/home',
-                    component: resolve => require(['../common/Home.vue'], resolve),
-                    children: menus
-                }
-
-                this.$router.addRoutes(menus);
+                console.log(this.$router.options.routes[2].children);
+/*                this.$router.options.routes[2].children.push({
+                    path : 'userManagement',
+                    name : 'userManagement',
+                    component : resolve => require(['./before/userManagement.vue'], resolve)
+                });*/
+                this.$router.addRoutes(this.$router.options.routes);//调用addRoutes添加路由
             }
         }
     }
