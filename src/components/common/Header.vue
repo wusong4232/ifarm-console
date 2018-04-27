@@ -1,8 +1,8 @@
 <template>
     <div class="header">
         <div class="logo">后台管理系统</div>
-        <div class="login-name"><span>登录人:</span>&nbsp;<span>{{username}}</span></div>
-        <div class="login-name"><span>当前部门:</span>&nbsp;<span>集团</span></div>
+        <div class="login-name"><span>登录人:</span>&nbsp;<span>{{currUserName}}</span></div>
+        <div class="login-name"><span>当前部门:</span>&nbsp;<span>{{currDeptName}}</span></div>
         <div class="user-info">
             <el-dropdown trigger="click" @command="handleCommand">
                 <span class="el-dropdown-link">
@@ -19,22 +19,24 @@
 </template>
 <script>
     export default {
-        data() {
-            return {
-                name: ''
-            }
-        },
         computed:{
-            username(){
-                let username = 'admin';
-                return username ? username : this.name;
+            currUserName(){
+                return this.getUserInfo().userName;
+            },
+            currDeptName(){
+                return this.getUserInfo().deptName;
             }
         },
         methods:{
+            getUserInfo(){
+                return JSON.parse(this.$cookie.get('userInfo'));
+            },
             handleCommand(command) {
                 if(command == 'logout'){
-                    localStorage.removeItem('ms_username');
                     this.$http.get('/logout',null,response => {
+                        this.$cookie.set('userName','',-1);
+                        this.$cookie.set('userInfo','',-1);
+                        this.$cookie.set('userMenu','',-1);
                         this.$router.push('/login');
                     });
                 }

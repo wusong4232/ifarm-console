@@ -4,9 +4,9 @@
                  unique-opened router>
             <template v-for="item in itemsCopy">
                 <template v-if="item.childrenNode.length">
-                    <el-submenu :index="item.tid.toString()">
+                    <el-submenu :index="item.resourceCode"><!--二级菜单-->
                         <template slot="title"><i :class="item.nodeIcon"></i>{{ item.resourceName }}</template>
-                        <el-menu-item v-for="(subItem,i) in item.childrenNode" :key="i" :index="subItem.resourceCode">{{ subItem.resourceName }}
+                        <el-menu-item v-for="(subItem,i) in item.childrenNode" :key="i" :index="subItem.entryUrl">{{ subItem.resourceName }}
                         </el-menu-item>
                     </el-submenu>
                 </template>
@@ -22,7 +22,6 @@
 </template>
 
 <script>
-    import VueCookie from "vue-cookie"
     export default {
         computed: {
             onRoutes() {
@@ -30,7 +29,6 @@
             },
             itemsCopy(){
                 let userMenu = this.$store.state.userMenu;
-                console.log(userMenu)
                 return userMenu[0].childrenNode;
             }
         }
