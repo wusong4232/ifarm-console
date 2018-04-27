@@ -4,50 +4,11 @@ import Router from 'vue-router';
 Vue.use(Router);
 
 export default new Router({
-    routes: [
-        {
+    routes: [{
             path: '/',
             redirect: '/login'
-        },
-        {
-            path: '/home',
-            component: resolve => require(['../components/common/Home.vue'], resolve),
-            children:[
-                {
-                    path: 'index',
-                    name:"首页",
-                    component: resolve => require(['../components/page/index.vue'], resolve)
-                },
-                {
-                    path: 'generalManagement',
-                    name:"综合管理",
-                    component: resolve => require(['../components/page/before/Readme.vue'], resolve)
-                },
-                {
-                    path: 'wordManagement',
-                    name:"词条管理",
-                    component: resolve => require(['../components/page/before/BaseTable.vue'], resolve)
-                },
-                {
-                    path: 'userManagement',
-                    name:"用户管理",
-                    component: resolve => require(['../components/page/before/VueTable.vue'], resolve)     // vue-datasource组件
-                },
-                {
-                    path: 'roleManagement',
-                    name:"角色管理",
-                    component: resolve => require(['../components/page/before/BaseForm.vue'], resolve)
-                },
-                {
-                    path: 'resourceManagement',
-                    name:"资源管理",
-                    component: resolve => require(['../components/page/before/VueEditor.vue'], resolve)    // Vue-Quill-Editor组件
-                }
-            ]
-        },
-        {
+        },{
             path: '/login',
             component: resolve => require(['../components/page/Login.vue'], resolve)
-        },
-    ]
+        }]
 })

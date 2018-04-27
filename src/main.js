@@ -43,7 +43,9 @@ const vue = new Vue({
             console.log(domRoute);
             //为什么刷新后这里的this.$route.path始终是"/"呢，所以先用dom方法判断
             if(domRoute==="/"||domRoute==="/login"){
-                this.$cookie.set('userName',"");
+                this.$cookie.set('userName', "", -1);
+                this.$cookie.get('userInfo', "", -1);
+                this.$cookie.get('userMenu', "", -1);
             }
             if(domRoute!=="/"&&domRoute!=="/login"){
                 let userInfo = this.$cookie.get('userInfo');

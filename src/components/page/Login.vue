@@ -63,11 +63,51 @@
                         self.$cookie.set('userMenu', JSON.stringify(userMenu));
                         this.$store.commit("saveUserInfo", userInfo);
                         this.$store.commit("saveUserMenu", userMenu);
+                        //添加路由
+                        this.addUserRoutes(userMenu);
                         self.$router.push('/home/index');
                     }
                 },fail => {
                     console.log(fail);
                 })
+            },
+            addUserRoutes : function (userMenus) {
+                let menus = new Array();
+                let menu = {};
+                for (let item in userMenus[0].childrenNode) {
+                    let subMenus = new Array();
+                    let subMenu = {};
+                    if (item.childrenNode) {
+                        for (let subItem in item.childrenNode) {
+                            subMenu = {
+                                path : item.entryUrl,
+                                name : item.resourceName,
+                                component : resolve => require(['../page/before/'+item.resourceName+'.vue'], resolve)
+                            }
+                            subMenus.push(subMenu);
+                        }
+                    }
+                    menu = {
+                        path : item.entryUrl,
+                        name : item.resourceName,
+                        component : resolve => require(['../page/before/'+item.resourceName+'.vue'], resolve),
+                        children : subMenus
+                    }
+                    menus.push(menu);
+                }
+                menu = {
+                    path: 'index',
+                    name:"首页",
+                    component: resolve => require(['../page/index.vue'], resolve)
+                };
+                menus.push(menu);
+                let allMenus = {
+                    path: '/home',
+                    component: resolve => require(['../common/Home.vue'], resolve),
+                    children: menus
+                }
+
+                this.$router.addRoutes(menus);
             }
         }
     }
