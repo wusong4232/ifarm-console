@@ -19,6 +19,7 @@
 </template>
 
 <script>
+    import MenuUtils from '../tools/MenuUtils';
     export default {
         data: function(){
             return {
@@ -48,6 +49,10 @@
                 this.$http.post('/login', params, response => {
                     localStorage.Authorization = response.result.Authorization;
                     this.getUserInfo();
+                    //添加路由
+                    // this.$store.commit('addTabs', {route: '/home/index', name: '首页'});
+                    // this.$store.commit('setActiveIndex', '/home/index');
+                    self.$router.push('/home/index');
                 },fail =>{
                     self.tips = fail.message;
                 });
@@ -64,46 +69,17 @@
                         this.$store.commit("saveUserInfo", userInfo);
                         this.$store.commit("saveUserMenu", userMenu);
                         this.addUserRouters(userMenu);
-                        //添加路由
-                        self.$router.push('/home/index');
-
                     }
                 },fail => {
                     console.log(fail);
                 })
             },
             addUserRouters : function (userMenus) {
-                console.log(userMenus);
-                let menu = {};
-                for (let i = 0; i < userMenus[0].childrenNode.length; i++) {
-                    let item = userMenus[0].childrenNode[i];
-                    let subMenu = {};
-                    if (item.childrenNode) {
-                        for (let j = 0; j < item.childrenNode.length; j++) {
-                            let subItem = item.childrenNode[j];
-                            let subComponent = './before/'+subItem.resourceCode+'.vue';
-                            subMenu = {
-                                path : subItem.entryUrl,
-                                name : subItem.resourceName,
-                                component : resolve => require([subComponent], resolve)
-                            }
-                            this.$router.options.routes[2].children.push(subMenu);
-                        }
-                    }
-                    let dyComponent = './before/'+item.resourceCode+'.vue';
-                    menu = {
-                        path : item.entryUrl,
-                        name : item.resourceName,
-                        component : resolve => require([dyComponent], resolve)
-                    }
-                    this.$router.options.routes[2].children.push(menu);
+                let routes = [];
+                MenuUtils(routes,userMenus);
+                for (let i = 0, len = routes.length; i < len; i++) {
+                    this.$router.options.routes[2].children.push(routes[i]);
                 }
-                console.log(this.$router.options.routes[2].children);
-/*                this.$router.options.routes[2].children.push({
-                    path : 'userManagement',
-                    name : 'userManagement',
-                    component : resolve => require(['./before/userManagement.vue'], resolve)
-                });*/
                 this.$router.addRoutes(this.$router.options.routes);//调用addRoutes添加路由
             }
         }
