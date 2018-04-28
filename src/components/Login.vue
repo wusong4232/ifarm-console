@@ -50,7 +50,6 @@
                     localStorage.Authorization = response.result.Authorization;
                     this.getUserInfo();
                     //添加路由
-                    this.$router.push('/home/index');
                 },fail =>{
                     self.tips = fail.message;
                 });
@@ -67,6 +66,7 @@
                         this.$store.commit("saveUserInfo", userInfo);
                         this.$store.commit("saveUserMenu", userMenu);
                         this.addUserRouters(userMenu);
+                        this.$router.push('/home/index');
                     }
                 },fail => {
                     console.log(fail);
