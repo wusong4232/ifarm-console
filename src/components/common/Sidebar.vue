@@ -18,7 +18,6 @@
     export default {
         computed: {
             onRoutes() {
-                console.log(this.$route.path);
                 return this.$route.path.split('/')[2];
             },
             itemsCopy(){

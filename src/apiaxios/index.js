@@ -116,7 +116,6 @@ export default {
                     cancel = c;
                 })
             }).then(res => {
-                console.log(res);
                 if (res.data.success){
                     successFun(res.data);
                 } else {

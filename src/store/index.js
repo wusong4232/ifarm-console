@@ -46,6 +46,11 @@ const store = new Vuex.Store({
         },
         removeUserMenu(state) {
             this.state.userMenu = null;
+        },
+        clearStore(state) {
+            this.state.options = [];
+            this.userInfo = null;
+            this.userMenu = null;
         }
     }
 });

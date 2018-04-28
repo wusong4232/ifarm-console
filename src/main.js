@@ -52,7 +52,7 @@ const vue = new Vue({
                 let userMenu = this.$cookie.get('userMenu');
                 this.$store.commit("saveUserInfo", JSON.parse(userInfo));
                 this.$store.commit("saveUserMenu", JSON.parse(userMenu));
-                this.$store.commit('addTabs', {route: '/home/index', name: '首页'});
+                // this.$store.commit('addTabs', {route: '/home/index', name: '首页'});
                 this.$store.commit('setActiveIndex', '/home/index');
                 this.$router.push('/home/index');
             }

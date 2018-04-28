@@ -34,12 +34,19 @@
             handleCommand(command) {
                 if(command == 'logout'){
                     this.$http.get('/logout',null,response => {
-                        this.$cookie.set('userName','',-1);
-                        this.$cookie.set('userInfo','',-1);
-                        this.$cookie.set('userMenu','',-1);
+                        this.clearCookie();
+                        this.clearStore();
                         this.$router.push('/login');
                     });
                 }
+            },
+            clearCookie : function(){
+                this.$cookie.set('userName','',-1);
+                this.$cookie.set('userInfo','',-1);
+                this.$cookie.set('userMenu','',-1);
+            },
+            clearStore : function(){
+                this.$store.commit("clearStore");
             },
             autoTime(){
                 var timeEle=document.querySelector('.headerTimer');
