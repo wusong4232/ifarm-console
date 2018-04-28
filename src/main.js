@@ -39,6 +39,7 @@ const vue = new Vue({
     },
     methods: {
         windowRefresh: function () {
+            sessionStorage.removeItem('isAddRouters');
             var domRoute = window.location.hash.substr(1);
             //为什么刷新后这里的this.$route.path始终是"/"呢，所以先用dom方法判断
             if(domRoute==="/"||domRoute==="/login"){
