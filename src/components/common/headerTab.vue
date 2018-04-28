@@ -84,8 +84,11 @@
             }
         },
         mounted(){
-            this.reAddRouter();
-             this.$store.commit('addTabs',{route: '/home/index', name: '首页'});
+            if (this.$tools.isEmpty(sessionStorage.getItem('isAddRouters'))) {
+                this.reAddRouter();
+                sessionStorage.setItem('isAddRouters', 'true');
+            }
+            this.$store.commit('addTabs',{route: '/home/index', name: '首页'});
         }
     }
 </script>

@@ -37,14 +37,6 @@
                         this.clearCookie();
                         this.clearStore();
                         sessionStorage.removeItem('routers');
-                        // window.location.reload();
-                        let routers = this.$router.options.routes[2].children;
-                        for (var i = 0, len = routers.length; i < len; i++){
-
-                            console.log(routers[i]);
-                        }
-                        this.$router.options.routes[2].children.splice(1, this.$router.options.routes[2].children.length - 1);
-                        console.log(this.$router.options.routes[2].children);
                         this.$router.push('/login');
                     });
                 }
