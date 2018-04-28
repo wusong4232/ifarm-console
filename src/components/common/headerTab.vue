@@ -19,6 +19,7 @@
     </div>
 </template>
 <script>
+    import MenuUtils from '../../tools/MenuUtils';
     export default {
         methods: {
             // tab切换时，动态的切换路由
@@ -42,6 +43,14 @@
                         this.$router.push('/home/index');
                     }
                 }
+            },
+            reAddRouter: function () {
+                let routers = []
+                    , routerData = JSON.parse(sessionStorage.getItem('routers'));
+                MenuUtils(routers,routerData,'router');
+
+                this.$router.options.routes[2].children = routers;
+                this.$router.addRoutes(this.$router.options.routes);//调用addRoutes添加路由
             }
         },
         computed: {
@@ -75,6 +84,7 @@
             }
         },
         mounted(){
+            this.reAddRouter();
              this.$store.commit('addTabs',{route: '/home/index', name: '首页'});
         }
     }

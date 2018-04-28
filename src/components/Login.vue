@@ -75,10 +75,6 @@
             addUserRouters : function (userMenus) {
                 let routes = [];
                 MenuUtils(routes,userMenus,'menu');
-                for (let i = 0, len = routes.length; i < len; i++) {
-                    this.$router.options.routes[2].children.push(routes[i]);
-                }
-                this.$router.addRoutes(this.$router.options.routes);//调用addRoutes添加路由
                 sessionStorage.setItem('routers',JSON.stringify(routes));
             }
         }
