@@ -10,6 +10,8 @@
                 </span>
                 <el-dropdown-menu slot="dropdown" placement="top-end">
                     <el-dropdown-item command="logout">退出</el-dropdown-item>
+                    <el-dropdown-item command="userInfo">个人信息</el-dropdown-item>
+                    <el-dropdown-item command="updatePassword">修改密码</el-dropdown-item>
                 </el-dropdown-menu>
             </el-dropdown>
         </div>
@@ -39,7 +41,12 @@
                         sessionStorage.removeItem('routers');
                         this.$router.push('/login');
                     });
+                } else if (command == 'userInfo') {
+
+                } else if (command == 'updatePassword'){
+
                 }
+
             },
             clearCookie : function(){
                 this.$cookie.set('userName','',-1);
