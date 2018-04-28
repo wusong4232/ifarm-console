@@ -59,6 +59,8 @@
         },
         watch: {
             '$route'(to) {
+                console.log(to);
+                console.log(this.options);
                 let flag = false;
                 for (let option of this.options) {
                     if (option.name === to.name) {
@@ -67,6 +69,7 @@
                         break
                     }
                 }
+                console.log(flag);
                 if (!flag) {
                     this.$store.commit('addTabs', {route: to.path, name: to.name});
                     this.$store.commit('setActiveIndex', to.path);

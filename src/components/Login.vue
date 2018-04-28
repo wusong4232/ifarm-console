@@ -50,9 +50,7 @@
                     localStorage.Authorization = response.result.Authorization;
                     this.getUserInfo();
                     //添加路由
-                    // this.$store.commit('addTabs', {route: '/home/index', name: '首页'});
-                    // this.$store.commit('setActiveIndex', '/home/index');
-                    self.$router.push('/home/index');
+                    this.$router.push('/home/index');
                 },fail =>{
                     self.tips = fail.message;
                 });
