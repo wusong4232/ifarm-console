@@ -9,6 +9,7 @@ import "babel-polyfill";
 import apiAxios from './apiaxios';
 import tools from './tools';
 import VueCookie from "vue-cookie";
+import MenuUtils from './tools/MenuUtils';
 
 Vue.prototype.$tools = tools;
 Vue.prototype.$http = apiAxios;
@@ -40,7 +41,13 @@ const vue = new Vue({
     methods: {
         windowRefresh: function () {
             var domRoute = window.location.hash.substr(1);
-            console.log(domRoute);
+            let routers = [], routerData = JSON.parse(sessionStorage.getItem('routers'));
+            console.log(routerData);
+            MenuUtils(routers,routerData,'router');
+            for (let i = 0, len = routers.length; i < len; i++) {
+                this.$router.options.routes[2].children.push(routers[i]);
+            }
+            this.$router.addRoutes(this.$router.options.routes);//调用addRoutes添加路由
             //为什么刷新后这里的this.$route.path始终是"/"呢，所以先用dom方法判断
             if(domRoute==="/"||domRoute==="/login"){
                 this.$cookie.set('userName', "", -1);
@@ -52,7 +59,6 @@ const vue = new Vue({
                 let userMenu = this.$cookie.get('userMenu');
                 this.$store.commit("saveUserInfo", JSON.parse(userInfo));
                 this.$store.commit("saveUserMenu", JSON.parse(userMenu));
-                // this.$store.commit('addTabs', {route: '/home/index', name: '首页'});
                 this.$store.commit('setActiveIndex', '/home/index');
                 this.$router.push('/home/index');
             }

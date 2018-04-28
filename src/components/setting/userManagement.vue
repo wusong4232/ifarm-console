@@ -1,105 +1,52 @@
 <template>
-    <section class="main">
-        <div class="crumbs">
-            <el-breadcrumb separator="/">
-                <el-breadcrumb-item><i class="el-icon-upload2"></i> 拖拽排序</el-breadcrumb-item>
-            </el-breadcrumb>
+    <div>
+        <div class="form-box">
+            <el-form :inline="true" :model="formInline" class="demo-form-inline">
+                <el-form-item label="用户名">
+                    <el-input v-model="formInline.userName" placeholder="用户名"></el-input>
+                </el-form-item>
+                <el-form-item label="用户昵称">
+                    <el-input v-model="formInline.nickName" placeholder="用户昵称"></el-input>
+                </el-form-item>
+                <el-form-item label="是否有效">
+                    <el-select v-model="formInline.active" placeholder="请选择">
+                        <el-option label="是" value="Y"></el-option>
+                        <el-option label="否" value="N"></el-option>
+                    </el-select>
+                </el-form-item>
+                <el-form-item>
+                    <el-button type="primary" @click="onSubmit">查询</el-button>
+                </el-form-item>
+            </el-form>
         </div>
-        <div class="drag-box-left">
-            <div class="drag-title">拖动排序</div>
-            <div class="drag-list" draggable="true" 
-                v-for="list in data1" 
-                :data-id="list.id" 
-                @dragstart="dragstartEvent"
-                @dragend="dragendEvent"
-                @dragenter="dragenterEvent"
-                @dragleave="dragleaveEvent"
-                @dragover="dragoverEvent"
-            >{{list.title}}</div>
-        </div>
-    </section>
+
+    </div>
 </template>
 
 <script>
     export default {
         data() {
             return {
-                dragElement: null,
-                lock: true,
-                data1: [
-                    {id: 1, title: '这里是列表1的标题'},
-                    {id: 2, title: '这里是列表2的标题'},
-                    {id: 3, title: '这里是列表3的标题'},
-                    {id: 4, title: '这里是列表4的标题'},
-                    {id: 5, title: '这里是列表5的标题'},
-                    {id: 6, title: '这里是列表6的标题'},
-                    {id: 7, title: '这里是列表7的标题'}
-                ],
-                data2: [
-                    {id: 1, title: '这里是列表11的标题'},
-                    {id: 2, title: '这里是列表12的标题'},
-                    {id: 3, title: '这里是列表13的标题'},
-                    {id: 4, title: '这里是列表14的标题'}
-                ]
+                formInline: {
+                    userInfoDTO : {
+                        user: '',
+                        nickName: '',
+                        active: ''
+                    }
+                }
             }
         },
         methods: {
-            dragstartEvent(ev) {
-                const self = this;
-                self.dragElement = ev.target;
-                ev.target.style.backgroundColor = '#f8f8f8';
-            },
-            dragendEvent(ev) {
-                ev.target.style.backgroundColor = '#fff';
-                ev.preventDefault();
-            },
-            dragenterEvent(ev) {
-                const self = this;
-                if(self.dragElement != ev.target){
-                    ev.target.parentNode.insertBefore(self.dragElement, ev.target);
-                }
-            },
-            dragleaveEvent(ev) {
-                const self = this;
-                if(self.dragElement != ev.target){
-                    if(self.lock && (ev.target == ev.target.parentNode.lastElementChild || ev.target == ev.target.parentNode.lastChild)){
-                        ev.target.parentNode.appendChild(self.dragElement);
-                        self.lock = false;
-                    }else{
-                        self.lock = true;
-                    }
-                }
-            },
-            dragoverEvent(ev) {
-                ev.preventDefault();
+            onSubmit() {
+                this.$http.post("/user/list", this.formInline, response => {
+                    console.log(response);
+                },fail => {
+                    console.log(fail);
+                })
             }
         }
     }
 </script>
 
-<style scoped>
-    .drag-box-left{
-        float: left;
-        width: 45%;
-    }
-    .drag-box-right{
-        float: right;
-        width: 45%;
-    }
-    .drag-list{
-        border: 1px solid #ddd;
-        padding:10px;
-        margin-bottom: 20px;
-        transition: border .3s;
-    }
-    .drag-list:hover{
-        border: 1px solid #20a0ff;
-    }
-    .drag-title{
-        font-weight: 400;
-        line-height: 25px;
-        margin: 10px 0;
-        font-size: 22px;
-        color: #1f2f3d;
-    }
+<style>
 </style>
