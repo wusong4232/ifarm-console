@@ -13,8 +13,9 @@
                 </el-form-item>
                 <el-form-item label="是否有效">
                     <el-select v-model="formData.userInfoDTO.active" placeholder="请选择">
-                        <el-option label="是" value="Y"></el-option>
-                        <el-option label="否" value="N"></el-option>
+                        <!--<el-option label="是" value="Y"></el-option>-->
+                        <!--<el-option label="否" value="N"></el-option>-->
+                        <el-option v-for="item in activeItems" :label="item.valueName" :value="item.valueCode"></el-option>
                     </el-select>
                 </el-form-item>
                 <br/>
@@ -120,7 +121,11 @@
             },
             handleSelectionChange(val) {
                 this.multipleSelection = val;
-                console.log(this.multipleSelection);
+            }
+        },
+        computed : {
+            activeItems(){
+                return this.$global.getTermsValueStore('ACTIVE');
             }
         }
     }

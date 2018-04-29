@@ -25,6 +25,14 @@ export default  {
         return true;
     },
     /**
+     * 判断是否是数组
+     * @param arr
+     * @returns {arg is Array<any>}
+     */
+    isArray: function (arr) {
+        return Array.isArray(arr);
+    },
+    /**
      * 验证手机号
      * @param mobileNo
      * @returns {Boolean}

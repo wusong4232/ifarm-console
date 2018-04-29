@@ -9,7 +9,9 @@ import "babel-polyfill";
 import apiAxios from './apiaxios';
 import tools from './tools';
 import VueCookie from "vue-cookie";
+import Global from './store/global';
 
+Vue.prototype.$global = Global;
 Vue.prototype.$tools = tools;
 Vue.prototype.$http = apiAxios;
 Vue.config.productionTip = false;
