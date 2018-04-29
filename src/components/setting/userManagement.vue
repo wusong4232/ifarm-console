@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div class="user-management-box">
         <div class="form-box">
             <el-form :inline="true" :model="formData" class="demo-form-inline" size="mini">
                 <el-form-item label="用户名">
@@ -11,11 +11,11 @@
                 <el-form-item label="手机号">
                     <el-input v-model="formData.userInfoDTO.mobileNo" placeholder="手机号"></el-input>
                 </el-form-item>
-                <el-form-item label="是否有效">
+                <el-form-item label="状态">
                     <el-select v-model="formData.userInfoDTO.active" placeholder="请选择">
                         <!--<el-option label="是" value="Y"></el-option>-->
                         <!--<el-option label="否" value="N"></el-option>-->
-                        <el-option v-for="item in activeItems" :label="item.valueName" :value="item.valueCode"></el-option>
+                        <el-option v-for="item in activeItems" :label="item.valueName" :value="item.valueCode" :key="item.valueCode"></el-option>
                     </el-select>
                 </el-form-item>
                 <br/>
@@ -33,51 +33,51 @@
                 tooltip-effect="dark"
                 style="width: 100%"
                 @selection-change="handleSelectionChange"
-                size="small"
+                size="mini"
             >
                 <el-table-column
                     type="selection"
-                    width="55">
+                    min-width="5%">
                 </el-table-column>
                 <el-table-column
                     prop="userName"
                     label="用户名"
-                    width="100">
+                    min-width="11%">
                 </el-table-column>
                 <el-table-column
                     prop="nickName"
                     label="昵称"
-                    width="150">
+                    min-width="11%">
                 </el-table-column>
                 <el-table-column
                     prop="email"
                     label="邮箱"
-                    width="200">
+                    min-width="17%">
                 </el-table-column>
                 <el-table-column
                     prop="mobileNo"
                     label="手机号"
-                    width="120">
+                    min-width="11%">
                 </el-table-column>
                 <el-table-column
                     prop="empCode"
                     label="工号"
-                    width="120">
+                    min-width="11%">
                 </el-table-column>
                 <el-table-column
                     prop="deptCode"
                     label="部门"
-                    width="120">
+                    min-width="11%">
                 </el-table-column>
                 <el-table-column
                     prop="notes"
                     label="备注"
-                    width="200">
+                    min-width="11%">
                 </el-table-column>
                 <el-table-column
                     prop="active"
                     label="是否可用"
-                    width="120">
+                    min-width="11%">
                 </el-table-column>
             </el-table>
         </div>
@@ -131,16 +131,24 @@
     }
 </script>
 
-<style scoped>
+<style>
+    .user-management-box{
+        width: 100%;
+        min-width: 1000px;
+    }
     .form-box{
         width: 100%;
     }
     .table-top{
         border-top: 1px solid #eee;
-        height: 450px;
-        min-height: 450px;
     }
     .pagination{
         text-align: center;
     }
+    tr div{
+        overflow: hidden !important;
+        text-overflow:ellipsis !important;
+        white-space: nowrap !important;
+    }
+
 </style>
