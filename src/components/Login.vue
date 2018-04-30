@@ -46,7 +46,7 @@
                     password: self.ruleForm.password
                 };
 
-                this.$http.post('/login', params, response => {
+                this.$http.post(this.$global.remote().login, params, response => {
                     localStorage.Authorization = response.result.Authorization;
                     this.getUserInfo();
                     //添加路由
@@ -56,7 +56,7 @@
             } ,
             getUserInfo: function () {
                 let self = this;
-                self.$http.get("/userInfo",null,response => {
+                self.$http.get(this.$global.remote().userInfo, null, response => {
                     if (self.$tools.isNotEmpty(response.result)) {
                         let userInfo = response.result.userInfoDTO;
                         let userMenu = response.result.userMenus;

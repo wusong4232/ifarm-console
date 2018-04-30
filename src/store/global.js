@@ -4,17 +4,62 @@ import tools from '../tools';
 
 const global = {}
 
+global.remoteUrl = {
+    login: '/login',
+    logout: '/logout',
+    //user manage
+    userInfo: '/userInfo',
+    userList: '/user/list',
+    userFind: '/user/find',
+    userDelete: '/user/delete',
+    userAdd: '/user/save',
+    userUpdate: '/user/update',
+    //terms manage
+    dictionary: '/terms/dictionary',
+    termsCodeList: '/terms/code/list',
+    termsCodeFind: '/terms/code/find',
+    termsCodeSave: '/terms/code/save',
+    termsCodeUpdate: '/terms/code/update',
+    termsCodeDelete: '/terms/code/delete',
+    termsValueList: '/terms/value/list',
+    termsValueFind: '/terms/value/find',
+    termsValueSave: '/terms/value/save',
+    termsValueUpdate: '/terms/value/update',
+    termsValueDelete: '/terms/value/delete',
+    //role manage
+    roleList: '/role/list',
+    roleFind: '/role/find',
+    roleDelete: '/role/delete',
+    roleAdd: '/role/save',
+    roleUpdate: '/role/update',
+    //resource manage
+    resourceList: '/resource/list',
+    resourceFind: '/resource/find',
+    resourceDelete: '/resource/delete',
+    resourceAdd: '/resource/save',
+    resourceUpdate: '/resource/update',
+}
+
 /**
  * flash dictionary
  */
 let loadDictionary = function() {
-    apiAxios.get('/terms//dictionary', null, response => {
+    apiAxios.get(global.remoteUrl.dictionary, null, response => {
         let dictionary = new Map();
+        let termsCodeMap = new Map();
+        let termsCodes = new Array();
         let dataArr = response.result.termsCodeDTOS;
         for(let i = 0; i < dataArr.length; i++) {
             dictionary.set(dataArr[i].termsCode, dataArr[i].termsValues);
+            termsCodeMap.set(dataArr[i].termsCode, dataArr[i].termsName);
+            termsCodes.push({
+                termsCode:dataArr[i].termsCode,
+                termsName:dataArr[i].termsName
+            })
         }
         global.dictionary = dictionary;
+        global.termsCodes = termsCodes;
+        global.termsCodeMap = termsCodeMap;
         return loadDictionary;
     }, fail => {
         Message.error(fail.message);
@@ -22,11 +67,17 @@ let loadDictionary = function() {
 }
 
 export default {
+    remote(){
+        return global.remoteUrl;
+    },
     flashDictionary : function () {
         setInterval(loadDictionary(),10 * 60 * 1000);
     },
-    getDictionary : function () {
-        return global.dictionary;
+    getTermsCodeMap : function () {
+        return global.termsCodeMap;
+    },
+    getTermsCodeStore: function () {
+        return global.termsCodes;
     },
     getTermsValueStore: function (termsCode) {
         if (tools.isEmpty(termsCode)) {

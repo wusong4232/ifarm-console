@@ -35,7 +35,7 @@
             },
             handleCommand(command) {
                 if(command == 'logout'){
-                    this.$http.get('/logout',null,response => {
+                    this.$http.get(this.$global.remote().logout,null,response => {
                         this.clearCookie();
                         this.clearStore();
                         sessionStorage.removeItem('routers');

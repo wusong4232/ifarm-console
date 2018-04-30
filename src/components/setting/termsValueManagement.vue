@@ -2,17 +2,24 @@
     <div class="user-management-box">
         <div class="form-box">
             <el-form :inline="true" :model="searchFormData" class="demo-form-inline" size="mini">
-                <el-form-item label="用户名">
-                    <el-input v-model="searchFormData.userInfoDTO.userName" placeholder="用户名"></el-input>
+                <el-form-item label="值编码">
+                    <el-input v-model="searchFormData.termsValueDTO.valueCode" placeholder="值编码"></el-input>
                 </el-form-item>
-                <el-form-item label="用户昵称">
-                    <el-input v-model="searchFormData.userInfoDTO.nickName" placeholder="用户昵称"></el-input>
+                <el-form-item label="值名称">
+                    <el-input v-model="searchFormData.termsValueDTO.valueName" placeholder="值名称"></el-input>
                 </el-form-item>
-                <el-form-item label="手机号">
-                    <el-input v-model="searchFormData.userInfoDTO.mobileNo" placeholder="手机号"></el-input>
+                <el-form-item label="词条">
+                    <el-select v-model="searchFormData.termsValueDTO.termsCode" filterable placeholder="请选择">
+                        <el-option
+                            v-for="item in termsCodeOptions"
+                            :key="item.termsCode"
+                            :label="item.termsName"
+                            :value="item.termsCode">
+                        </el-option>
+                    </el-select>
                 </el-form-item>
                 <el-form-item label="状态">
-                    <el-select v-model="searchFormData.userInfoDTO.active" placeholder="请选择">
+                    <el-select v-model="searchFormData.termsValueDTO.active" placeholder="请选择">
                         <el-option label="--全部--" value=""></el-option>
                         <el-option v-for="item in activeItems" :label="item.valueName" :value="item.valueCode" :key="item.valueCode"></el-option>
                     </el-select>
@@ -29,7 +36,7 @@
         <div class="table-top">
             <el-table
                 ref="multipleTable"
-                :data="userInfoDTOS"
+                :data="termsValueDTOS"
                 tooltip-effect="dark"
                 style="width: 100%"
                 @selection-change="handleSelectionChange"
@@ -42,33 +49,28 @@
                     min-width="5%">
                 </el-table-column>
                 <el-table-column
-                    prop="userName"
-                    label="用户名"
+                    prop="valueCode"
+                    label="值编码"
                     min-width="11%">
                 </el-table-column>
                 <el-table-column
-                    prop="nickName"
-                    label="昵称"
+                    prop="valueName"
+                    label="值名称"
                     min-width="11%">
                 </el-table-column>
                 <el-table-column
-                    prop="email"
-                    label="邮箱"
-                    min-width="17%">
-                </el-table-column>
-                <el-table-column
-                    prop="mobileNo"
-                    label="手机号"
+                    prop="termsCode"
+                    label="词条编码"
                     min-width="11%">
                 </el-table-column>
                 <el-table-column
-                    prop="empCode"
-                    label="工号"
+                    prop="termsName"
+                    label="词条名称"
                     min-width="11%">
                 </el-table-column>
                 <el-table-column
-                    prop="deptCode"
-                    label="部门"
+                    prop="valueSeq"
+                    label="顺序"
                     min-width="11%">
                 </el-table-column>
                 <el-table-column
@@ -102,26 +104,30 @@
             center>
             <el-form label-width="80px" :model="form" :rules="rules" ref="form" size="small" :inline="true">
                 <el-input type="hidden" v-model="form.tid" auto-complete="off"></el-input>
-                <el-form-item label="用户名" prop="userName">
-                    <el-input v-model="form.userName" auto-complete="off" :disabled="formColumnDisable"></el-input>
+                <el-form-item label="值编码" prop="valueCode">
+                    <el-input v-model="form.valueCode" auto-complete="off" :disabled="formColumnDisable"></el-input>
                 </el-form-item>
-                <el-form-item label="昵称" prop="nickName">
-                    <el-input v-model="form.nickName" auto-complete="off"></el-input>
+                <el-form-item label="值名称" prop="valueName">
+                    <el-input v-model="form.valueName" auto-complete="off"></el-input>
                 </el-form-item>
-                <el-form-item label="密码" prop="password">
-                    <el-input v-model="form.password" auto-complete="off" :disabled="formColumnDisable"></el-input>
+                <el-form-item label="选择词条" v-show="!editShow" prop="termsCode">
+                    <el-select v-model="form.termsCode" filterable placeholder="请选择">
+                        <el-option
+                            v-for="item in termsCodeOptions"
+                            :key="item.termsCode"
+                            :label="item.termsName"
+                            :value="item.termsCode">
+                        </el-option>
+                    </el-select>
                 </el-form-item>
-                <el-form-item label="邮箱" prop="email">
-                    <el-input v-model="form.email" auto-complete="off"></el-input>
+                <el-form-item label="词条编码" prop="termsCode" v-show="editShow">
+                    <el-input v-model="form.termsCode" auto-complete="off" :disabled="formColumnDisable"></el-input>
                 </el-form-item>
-                <el-form-item label="电话" prop="mobileNo">
-                    <el-input v-model="form.mobileNo" auto-complete="off"></el-input>
+                <el-form-item label="词条名称" prop="termsName" v-show="editShow">
+                    <el-input v-model="form.termsName" auto-complete="off" :disabled="formColumnDisable"></el-input>
                 </el-form-item>
-                <el-form-item label="工号" prop="empCode">
-                    <el-input v-model="form.empCode" auto-complete="off"></el-input>
-                </el-form-item>
-                <el-form-item label="部门" prop="deptCode">
-                    <el-input v-model="form.deptCode" auto-complete="off"></el-input>
+                <el-form-item label="顺序" prop="valueSeq">
+                    <el-input type="number" v-model="form.valueSeq" auto-complete="off"></el-input>
                 </el-form-item>
                 <el-form-item label="状态">
                     <el-select v-model="form.active" placeholder="请选择">
@@ -145,15 +151,15 @@
         data() {
             return {
                 searchFormData:{
-                    userInfoDTO : {
-                        userName: '',
-                        nickName: '',
-                        mobileNo: '',
+                    termsValueDTO : {
+                        valueCode: '',
+                        valueName: '',
+                        termsCode: '',
                         active: 'Y'
                     }
                 },
                 totalCount: 0,
-                userInfoDTOS: [],
+                termsValueDTOS: [],
                 updateDisable: true,
                 deleteDisable: true,
                 //多选数组
@@ -165,58 +171,27 @@
                 dialogCommand: '',
                 formLabelWidth: '120px',
                 formColumnDisable: false,
+                editShow: false,
                 form: {
                     tid: '',
-                    userName: '',
-                    password: '',
-                    nickName: '',
-                    email: '',
-                    mobileNo: '',
-                    empCode: '',
-                    deptCode: '',
+                    valueCode: '',
+                    valueName: '',
+                    termsCode: '',
+                    termsName: '',
+                    valueSeq: 1,
                     notes: '',
-                    active: ''
+                    active: '',
                 },
                 rules: {
-                    userName: [{
-                        required: true, message: '请输入用户名', trigger: 'blur'
+                    valueCode: [{
+                        required: true, message: '请输入值编码', trigger: 'blur'
                     }],
-                    password: [{
-                        required: true, message: '请输入密码', trigger: 'blur'
-                    }/*,{
-                        min: 6, max: 15, message: '长度在 6 到 15 个字符'
-                    }*/],
-                    nickName: [{
-                        required: true, message: '请输入用户昵称', trigger: 'blur'
+                    valueName: [{
+                        required: true, message: '请输入值名称', trigger: 'blur'
                     }],
-                    email: [{
-                        required: true, message: '请输入邮箱', trigger: 'blur'
-                    }, {
-                        validator: function (rule, value, callback) {
-                            /*if (!this.$tools.isMail(value)) {
-                                callback(new Error("请输入邮箱"));
-                            } else {
-                                callback();
-                            }*/
-                        }
+                    termsCode: [{
+                        required: true, message: '请选择词条名称', trigger: 'change'
                     }],
-                    mobileNo:[{
-                        required: true, message: '请输入手机号', trigger: 'blur'
-                    },{
-                        validator:function(rule,value,callback){
-                            /*if(!this.$tools.isMobileNo(value)){
-                                callback(new Error("请输入手机号"));
-                            }else{
-                                callback();
-                            }*/
-                        }
-                    }],
-                    empCode: [{
-                        required: true, message: '请输入工号', trigger: 'blur'
-                    }],
-                    deptCode: [{
-                        required: true, message: '请输入部门', trigger: 'blur'
-                    }]
                 }
             }
         },
@@ -224,30 +199,32 @@
             onSearch() {
                 this.searchFormData.pageNo = this.currentPage;
                 this.searchFormData.pageSize = this.pageSize;
-                this.$http.post(this.$global.remote().userList, this.searchFormData, response => {
-                    this.userInfoDTOS = response.result.userInfoDTOS;
+                this.$http.post(this.$global.remote().termsValueList, this.searchFormData, response => {
+                    this.termsValueDTOS = response.result.termsValueDTOS;
                     this.totalCount = response.result.totalCount;
                 },fail => {
                     this.$message.error(fail.message);
                 })
             },
             onAdd(){
-                this.dialogTitle = '新增用户';
+                this.dialogTitle = '新增字典值';
                 this.dialogVisible = true;
                 this.dialogCommand = 'add';
                 this.formColumnDisable = false;
+                this.editShow = false;
             },
             onUpdate() {
                 if (this.multipleSelection.length > 1) {
                     this.$message({message:"只能选择其中一条数据进行修改",type: 'warning'});
                     return;
                 }
-                this.dialogTitle = '更新用户';
+                this.dialogTitle = '更新字典值';
                 this.dialogVisible = true;
                 this.dialogCommand = 'update';
                 this.formColumnDisable = true;
+                this.editShow = true;
                 let tid = this.multipleSelection[0].tid;
-                this.$http.get(this.$global.remote().userFind, {tid:tid}, response => {
+                this.$http.get(this.$global.remote().termsValueFind, {tid:tid}, response => {
                     this.form = response.result;
                 }, fail => {
                     this.$message.error(fail.message);
@@ -256,11 +233,12 @@
             handleSubmit(){
                 let url = '';
                 let param = {}
-                param.userInfoDTO = this.form;
+                param.termsValueDTO = this.form;
                 if (this.dialogCommand == 'add') {
-                    url = this.$global.remote().userAdd;
+                    url = this.$global.remote().termsValueSave;
+                    this.form.termsName = this.$global.getTermsCodeMap().get(this.form.termsCode);
                 } else if (this.dialogCommand == 'update') {
-                    url = this.$global.remote().userUpdate;
+                    url = this.$global.remote().termsValueUpdate;
                 }
                 this.$http.post(url, param, response => {
                     this.closeDialog();
@@ -279,7 +257,7 @@
                     this.multipleSelection.forEach((item) => {
                         array.push(item.tid);
                     });
-                    this.$http.post(this.$global.remote().userDelete, {ids: array}, response => {
+                    this.$http.post(this.$global.remote().termsValueDelete, {ids: array}, response => {
                         this.$message({
                             type: 'success',
                             message: '删除成功!'
@@ -325,6 +303,9 @@
             }
         },
         computed : {
+            termsCodeOptions(){
+                return this.$global.getTermsCodeStore();
+            },
             activeItems(){
                 return this.$global.getTermsValueStore('ACTIVE');
             }
@@ -352,6 +333,9 @@
         white-space: nowrap !important;
     }
     .el-form input {
+        width: 190px;
+    }
+    .el-form select {
         width: 190px;
     }
     .el-form textarea {
