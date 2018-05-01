@@ -55,6 +55,7 @@
                 </el-table-column>
                 <el-table-column
                     prop="active"
+                    :formatter="handleActive"
                     label="状态"
                     min-width="11%">
                 </el-table-column>
@@ -245,11 +246,14 @@
             closeDialog(){
                 this.dialogVisible = false;
                 this.$refs.form.resetFields();
+            },
+            handleActive(row, column, cellValue, index){
+                return this.$global.transformActive(cellValue);
             }
         },
         computed : {
             activeItems(){
-                return this.$global.getTermsValueStore('ACTIVE');
+                return this.$global.getTermsValueStore('DATA_STATUE');
             }
         }
     }

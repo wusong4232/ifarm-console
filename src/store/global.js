@@ -93,5 +93,14 @@ export default {
             })
         }
         return result;
+    },
+    transformActive(cell) {
+        let value = '';
+        if (cell == 'Y') {
+            value = '有效';
+        } else {
+            value = '无效';
+        }
+        return value;
     }
 }
