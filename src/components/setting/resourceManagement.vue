@@ -1,261 +1,149 @@
 <template>
     <div class="user-management-box">
         <div class="form-box">
-            <el-form :inline="true" :model="searchFormData" class="demo-form-inline" size="mini">
-                <el-form-item label="角色编码">
-                    <el-input v-model="searchFormData.roleInfoDTO.roleCode" placeholder="角色编码"></el-input>
-                </el-form-item>
-                <el-form-item label="角色名称">
-                    <el-input v-model="searchFormData.roleInfoDTO.roleName" placeholder="角色名称"></el-input>
-                </el-form-item>
-                <el-form-item label="状态">
-                    <el-select v-model="searchFormData.roleInfoDTO.active" placeholder="请选择">
-                        <el-option label="--全部--" value=""></el-option>
-                        <el-option v-for="item in activeItems" :label="item.valueName" :value="item.valueCode" :key="item.valueCode"></el-option>
-                    </el-select>
-                </el-form-item>
-                <br/>
+            <el-form :inline="true" size="mini">
                 <el-form-item >
-                    <el-button type="primary" @click="onSearch">查询</el-button>
                     <el-button type="primary" @click="onAdd">新增</el-button>
                     <el-button type="primary" @click="onUpdate" :disabled="updateDisable">修改</el-button>
                     <el-button type="primary" @click="onDelete" :disabled="deleteDisable">删除</el-button>
                 </el-form-item>
             </el-form>
         </div>
-        <div class="table-top">
-            <el-table
-                ref="multipleTable"
-                :data="roleInfoDTOS"
-                tooltip-effect="dark"
-                style="width: 100%"
-                @selection-change="handleSelectionChange"
-                @row-click="rowClick"
-                @row-dblclick="rowDblClick"
-                size="mini"
-            >
-                <el-table-column
-                    type="selection"
-                    min-width="5%">
-                </el-table-column>
-                <el-table-column
-                    prop="roleCode"
-                    label="角色编码"
-                    min-width="11%">
-                </el-table-column>
-                <el-table-column
-                    prop="roleName"
-                    label="角色名称"
-                    min-width="11%">
-                </el-table-column>
-                <el-table-column
-                    prop="notes"
-                    label="备注"
-                    min-width="11%">
-                </el-table-column>
-                <el-table-column
-                    prop="active"
-                    label="状态"
-                    min-width="11%">
-                </el-table-column>
-            </el-table>
+        <div>
+            <el-container style="border: 1px solid #eee" class="form-container">
+                <div class="form-div">
+                    <el-form :inline="true" size="mini">
+                        <el-form-item style="width: 100px;">
+                            <el-input placeholder="菜单名称"></el-input>
+                        </el-form-item>
+                        <el-form-item >
+                            <el-button type="primary" @click="onAdd">查询</el-button>
+                        </el-form-item>
+                    </el-form>
+                </div>
+                <div class="form-aside">
+                    <el-aside width="200px" style="background-color: rgb(238, 241, 246)">
+                        <el-menu :default-openeds="['1', '3']">
+                            <el-submenu index="1">
+                                <template slot="title"><i class="el-icon-message"></i>导航一</template>
+                                <el-menu-item index="1-1">选项1</el-menu-item>
+                                <el-menu-item index="1-2">选项2</el-menu-item>
+                                <el-menu-item index="1-3">选项3</el-menu-item>
+                                <!--<el-menu-item-group>
+                                    &lt;!&ndash;<template slot="title">分组一</template>&ndash;&gt;
+                                    <el-menu-item index="1-1">选项1</el-menu-item>
+                                    <el-menu-item index="1-2">选项2</el-menu-item>
+                                </el-menu-item-group>
+                                <el-menu-item-group title="分组2">
+                                    <el-menu-item index="1-3">选项3</el-menu-item>
+                                </el-menu-item-group>-->
+                                <el-submenu index="1-4">
+                                    <template slot="title">选项4</template>
+                                    <el-menu-item index="1-4-1">选项4-1</el-menu-item>
+                                </el-submenu>
+                            </el-submenu>
+                            <el-submenu index="2">
+                                <template slot="title"><i class="el-icon-menu"></i>导航二</template>
+                                <el-menu-item index="2-1">选项1</el-menu-item>
+                                <el-menu-item index="2-2">选项2</el-menu-item>
+                                <el-menu-item index="2-3">选项3</el-menu-item>
+                                <el-menu-item index="2-4">选项4</el-menu-item>
+<!--                                <el-menu-item-group>
+                                    <template slot="title">分组一</template>
+                                    <el-menu-item index="2-1">选项1</el-menu-item>
+                                    <el-menu-item index="2-2">选项2</el-menu-item>
+                                </el-menu-item-group>
+                                <el-menu-item-group title="分组2">
+                                    <el-menu-item index="2-3">选项3</el-menu-item>
+                                </el-menu-item-group>
+                                <el-submenu index="2-4">
+                                    <template slot="title">选项4</template>
+                                    <el-menu-item index="2-4-1">选项4-1</el-menu-item>
+                                </el-submenu>-->
+                            </el-submenu>
+                            <el-submenu index="3">
+                                <template slot="title"><i class="el-icon-setting"></i>导航三</template>
+                                <el-menu-item index="3-1">选项1</el-menu-item>
+                                <el-menu-item index="3-2">选项2</el-menu-item>
+                                <el-menu-item index="3-3">选项3</el-menu-item>
+<!--                                <el-menu-item-group>
+                                    <template slot="title">分组一</template>
+                                    <el-menu-item index="3-1">选项1</el-menu-item>
+                                    <el-menu-item index="3-2">选项2</el-menu-item>
+                                </el-menu-item-group>
+                                <el-menu-item-group title="分组2">
+                                    <el-menu-item index="3-3">选项3</el-menu-item>
+                                </el-menu-item-group>-->
+                                <el-submenu index="3-4">
+                                    <template slot="title">选项4</template>
+                                    <el-menu-item index="3-4-1">选项4-1</el-menu-item>
+                                </el-submenu>
+                            </el-submenu>
+                        </el-menu>
+                    </el-aside>
+                </div>
+                <div class="form-container">
+                    <el-container>
+                        <!--<el-header style="text-align: right; font-size: 12px">-->
+                            <!--<el-dropdown>-->
+                                <!--<i class="el-icon-setting" style="margin-right: 15px"></i>-->
+                                <!--<el-dropdown-menu slot="dropdown">-->
+                                    <!--<el-dropdown-item>查看</el-dropdown-item>-->
+                                    <!--<el-dropdown-item>新增</el-dropdown-item>-->
+                                    <!--<el-dropdown-item>删除</el-dropdown-item>-->
+                                <!--</el-dropdown-menu>-->
+                            <!--</el-dropdown>-->
+                            <!--<span>王小虎</span>-->
+                        <!--</el-header>-->
+
+                        <el-main>
+                            <div class="scoped-table">
+                                <el-table :data="tableData">
+                                    <el-table-column prop="date" label="日期" width="140">
+                                    </el-table-column>
+                                    <el-table-column prop="name" label="姓名" width="120">
+                                    </el-table-column>
+                                    <el-table-column prop="address" label="地址">
+                                    </el-table-column>
+                                </el-table>
+                            </div>
+                        </el-main>
+                    </el-container>
+                </div>
+            </el-container>
         </div>
-        <div class="pagination">
-            <el-pagination
-                small
-                background
-                layout="total, sizes, prev, pager, next, jumper"
-                @size-change="handleSizeChange"
-                @current-change="handleCurrentPageChange"
-                :page-size="pageSize"
-                :current-page="currentPage"
-                :total="totalCount">
-            </el-pagination>
-        </div>
-        <el-dialog
-            :title="dialogTitle"
-            :visible.sync="dialogVisible"
-            @close="closeDialog"
-            center>
-            <el-form label-width="80px" :model="form" :rules="rules" ref="form" size="small" :inline="true">
-                <el-input type="hidden" v-model="form.tid" auto-complete="off"></el-input>
-                <el-form-item label="角色编码" prop="roleCode">
-                    <el-input v-model="form.roleCode" auto-complete="off" :disabled="formColumnDisable"></el-input>
-                </el-form-item>
-                <el-form-item label="角色名称" prop="roleName">
-                    <el-input v-model="form.roleName" auto-complete="off"></el-input>
-                </el-form-item>
-                <el-form-item label="状态">
-                    <el-select v-model="form.active" placeholder="请选择">
-                        <el-option v-for="item in activeItems" :label="item.valueName" :value="item.valueCode" :key="item.valueCode"></el-option>
-                    </el-select>
-                </el-form-item>
-                <el-form-item label="备注">
-                    <el-input type="textarea" v-model="form.notes" auto-complete="off"></el-input>
-                </el-form-item>
-            </el-form>
-            <span slot="footer" class="dialog-footer">
-                <el-button @click="closeDialog">取 消</el-button>
-                <el-button type="primary" @click="handleSubmit">确 定</el-button>
-              </span>
-        </el-dialog>
     </div>
 </template>
-
 <script>
     export default {
         data() {
+            const item = {
+                name: '王小虎',
+                address: '上海市普陀区金沙江路 1518 弄'
+            };
             return {
-                searchFormData:{
-                    roleInfoDTO : {
-                        roleCode: '',
-                        roleName: '',
-                        active: 'Y'
-                    }
-                },
-                totalCount: 0,
-                roleInfoDTOS: [],
                 updateDisable: true,
                 deleteDisable: true,
-                //多选数组
-                multipleSelection: [],
-                currentPage: 1,
-                pageSize: 10,
-                dialogTitle: '',
-                dialogVisible: false,
-                dialogCommand: '',
-                formLabelWidth: '120px',
-                formColumnDisable: false,
-                form: {
-                    tid: '',
-                    roleCode: '',
-                    roleName: '',
-                    notes: '',
-                    active: ''
-                },
-                rules: {
-                    roleCode: [{
-                        required: true, message: '请输入词条编码', trigger: 'blur'
-                    }],
-                    roleName: [{
-                        required: true, message: '请输入词条名称', trigger: 'blur'
-                    }]
-                }
+                tableData: Array(20).fill(item)
             }
         },
         methods: {
-            onSearch() {
-                this.searchFormData.pageNo = this.currentPage;
-                this.searchFormData.pageSize = this.pageSize;
-                this.$http.post(this.$global.remote().roleList, this.searchFormData, response => {
-                    this.roleInfoDTOS = response.result.roleInfoDTOS;
-                    this.totalCount = response.result.totalCount;
-                },fail => {
-                    this.$message.error(fail.message);
-                })
-            },
             onAdd(){
-                this.dialogTitle = '新增角色';
-                this.dialogVisible = true;
-                this.dialogCommand = 'add';
-                this.formColumnDisable = false;
-            },
-            onUpdate() {
-                if (this.multipleSelection.length > 1) {
-                    this.$message({message:"只能选择其中一条数据进行修改",type: 'warning'});
-                    return;
-                }
-                this.dialogTitle = '更新角色';
-                this.dialogVisible = true;
-                this.dialogCommand = 'update';
-                this.formColumnDisable = true;
-                let tid = this.multipleSelection[0].tid;
-                this.$http.get(this.$global.remote().roleFind, {tid:tid}, response => {
-                    this.form = response.result;
-                }, fail => {
-                    this.$message.error(fail.message);
-                })
-            },
-            handleSubmit(){
-                let url = '';
-                let param = {}
-                param.roleInfoDTO = this.form;
-                if (this.dialogCommand == 'add') {
-                    url = this.$global.remote().roleAdd;
-                } else if (this.dialogCommand == 'update') {
-                    url = this.$global.remote().roleUpdate;
-                }
-                this.$http.post(url, param, response => {
-                    this.closeDialog();
-                    this.onSearch();
-                }, fail => {
-                    this.$message.error(fail.message);
-                })
-            },
-            onDelete() {
-                this.$confirm('确认删除选中数据, 是否继续?', '提示', {
-                    confirmButtonText: '确定',
-                    cancelButtonText: '取消',
-                    type: 'warning'
-                }).then(() => {
-                    var array = [];
-                    this.multipleSelection.forEach((item) => {
-                        array.push(item.tid);
-                    });
-                    this.$http.post(this.$global.remote().roleDelete, {ids: array}, response => {
-                        this.$message({
-                            type: 'success',
-                            message: '删除成功!'
-                        });
-                        this.onSearch();
-                    }, fail => {
-                        this.$message.error(fail.message);
-                    })
-                }).catch(() => {
-                    this.$message({
-                        type: 'info',
-                        message: '已取消删除'
-                    });
-                });
-            },
-            handleSelectionChange(val) {
-                this.multipleSelection = val;
-                if (val.length > 0) {
-                    this.updateDisable = false;
-                    this.deleteDisable = false;
-                } else {
-                    this.updateDisable = true;
-                    this.deleteDisable = true;
-                }
 
             },
-            handleSizeChange(pageSize) {
-                this.pageSize = pageSize;
-                this.onSearch();
+            onUpdate(){
+
             },
-            handleCurrentPageChange(currentPage) {
-                this.currentPage = currentPage;
-                this.onSearch();
+            onDelete(){
+
             },
-            rowClick(row, event, column){
-                this.$refs.multipleTable.toggleRowSelection(row);
-            },
-            rowDblClick(row, event){
-            },
-            closeDialog(){
-                this.dialogVisible = false;
-                this.$refs.form.resetFields();
-            }
-        },
-        computed : {
-            activeItems(){
-                return this.$global.getTermsValueStore('ACTIVE');
-            }
+
         }
-    }
+    };
 </script>
 
-<style scoped="scoped">
+
+<style lang="less">
     .user-management-box{
         width: 100%;
         min-width: 1000px;
@@ -266,18 +154,59 @@
     .table-top{
         border-top: 1px solid #eee;
     }
-    .pagination{
-        text-align: center;
+    .el-header {
+        background-color: #B3C0D1;
+        color: #333;
+        line-height: 60px;
     }
-    tr div{
-        overflow: hidden !important;
-        text-overflow:ellipsis !important;
-        white-space: nowrap !important;
+
+    .el-aside {
+        color: #333;
     }
-    .el-form input {
-        width: 190px;
+    form.el-form{
+        height: 40px;
     }
-    .el-form textarea {
-        width: 475px;
+/*    aside.el-aside{
+        display: inline-block;
+    }*/
+    .form-container{
+        position: relative;
+        height: 1000px;
+    }
+   div.form-div{
+       height: 47.8px;
+       position: absolute;
+       top:0;
+       left:0;
+   }
+    div.form-aside{
+        position: absolute;
+        top:46.8px;
+        left:0;
+    }
+    div.form-container{
+        position: absolute;
+        left:200px;
+        right:0;
+    }
+    .el-menu{
+        border:none !important;
+    }
+    div.form-div .el-form-item--mini.el-form-item{
+        margin-top: 10px;
+        margin-left: 5px;
+    }
+    div.form-container .el-main{
+        padding: 0;
+    }
+    div.scoped-table{
+        td div.cell{
+            line-height: 19.6px;
+        }
+    }
+    div.scoped-table{
+        div.el-table__header-wrapper table{
+            height: 47px !important;
+        }
     }
 </style>

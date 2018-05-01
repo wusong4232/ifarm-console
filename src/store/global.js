@@ -33,6 +33,7 @@ global.remoteUrl = {
     roleAdd: '/role/save',
     roleUpdate: '/role/update',
     //resource manage
+    resourceFindByParentCode: '/resource/findByParentCode',
     resourceList: '/resource/list',
     resourceFind: '/resource/find',
     resourceDelete: '/resource/delete',
