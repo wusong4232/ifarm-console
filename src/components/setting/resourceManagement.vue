@@ -201,7 +201,7 @@
     }
     div.scoped-table{
         td div.cell{
-            line-height: 19.6px;
+            line-height: 20px;
         }
     }
     div.scoped-table{
