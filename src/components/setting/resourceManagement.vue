@@ -23,11 +23,11 @@
                 </div>
                 <div class="form-aside">
                     <el-tree
-                        :data="treeData"
                         show-checkbox
                         node-key="id"
-                        :lazy="true"
-                        :load="loadChildren"
+                        lazy
+                        :load="loadNode"
+                        :props="defaultProps"
                         :default-expand-all="defaultExpand"
                         @node-expand="handleNodeExpand"
                         @node-collapse="handleNodeCollapse"
@@ -35,12 +35,51 @@
                     </el-tree>
                 </div>
                 <div class="form-container">
+                    <div class="container-top">组织架构基本信息</div>
                     <el-container>
-                        <el-main>
-                            <div class="scoped-table">
-                            </div>
+                        <el-main style="padding: 20px;">
+                            <el-form label-width="100px" :model="nodeData" size="small" :inline="true">
+                                <div style="width: 100%">
+                                    <el-form-item label="菜单编码：">
+                                        {{nodeData.resourceCode}}
+                                    </el-form-item>
+                                    <el-form-item label="菜单名称：">
+                                        {{nodeData.resourceName}}
+                                    </el-form-item>
+                                </div>
+                                <div>
+                                    <el-form-item label="父级编码：">
+                                        {{nodeData.parentCode}}
+                                    </el-form-item>
+                                    <el-form-item label="菜单路由：">
+                                        {{nodeData.router}}
+                                    </el-form-item>
+                                </div>
+                                <el-form-item label="菜单组件：">
+                                    {{nodeData.component}}
+                                </el-form-item>
+                                <el-form-item label="菜单层级：">
+                                    {{nodeData.resourceLevel}}
+                                </el-form-item>
+                                <el-form-item label="菜单类型：">
+                                    {{nodeData.resourceType}}
+                                </el-form-item>
+                                <el-form-item label="展示顺序：">
+                                    {{nodeData.displayOrder}}
+                                </el-form-item>
+                                <el-form-item label="菜单图标：">
+                                    {{nodeData.nodeIcon}}
+                                </el-form-item>
+                                <el-form-item label="是否叶子节点：">
+                                    {{nodeData.leafFlag}}
+                                </el-form-item>
+                                <el-form-item label="备注：">
+                                    {{nodeData.notes}}
+                                </el-form-item>
+                            </el-form>
                         </el-main>
                     </el-container>
+                    <div class="container-top mt20">权限信息</div>
                 </div>
             </el-container>
         </div>
@@ -53,10 +92,25 @@
                 defaultExpand: false,
                 updateDisable: true,
                 deleteDisable: true,
-                treeData: [{
-                    id: 'console_1',
-                    label: 'console系统'
-                }]
+                defaultProps:{
+                    code: "code",
+                    label: 'label',
+                    nodeData: 'nodeData',
+                    isLeaf:'isLeaf'
+                },
+                nodeData: {
+                    resourceCode:'',
+                    resourceName:'',
+                    router:'',
+                    component:'',
+                    parentCode:'',
+                    resourceLevel:'',
+                    resourceType:'',
+                    displayOrder:'',
+                    nodeIcon:'',
+                    leafFlag:'',
+                    notes:''
+                }
             }
         },
         methods: {
@@ -69,34 +123,60 @@
             onDelete(){
 
             },
-            loadChildren(node, resolve){
-                node.childNodes = this.loadData(node.id);
+            loadNode(node, resolve){
+                if (node.level === 0) {
+                    return resolve([{
+                        code: 'console_1',
+                        label: 'console系统',
+                        nodeData:{},
+                        isLeaf: false
+                    }]);
+                }
+                if (node.level >= 1) {
+                    let parentCode = node.data.code;
+                    this.loadData(parentCode, resolve)
+                }
+            },
+            loadData(parentCode, resolve) {
+                this.$http.get(this.$global.remote().resourceFindByParentCode, {parentCode: parentCode}, response => {
+                    let resources = response.result;
+                    if (resources == null || resources == undefined || resources.length == 0) {
+                        return resolve([]);
+                    }
+                    let temp = new Array();
+                    for (let i = 0, len = resources.length; i < len; i++) {
+                        let res = resources[i];
+                        temp.push({
+                            code: res.resourceCode,
+                            label: res.resourceName,
+                            nodeData: res,
+                            isLeaf: res.leafFlag == 'Y' ? true : false
+                        })
+                    }
+                    return resolve(temp);
+                }, fail => {
+                    this.$message.error(fail.message);
+                })
             },
             handleNodeExpand(data) {
             },
             handleNodeCollapse(data){
             },
-            handleNodeClick(data, node, nodeArr){
+            handleNodeClick(data, node){
+                console.log(data);
+                console.log(node);
+                let temp = node.data.nodeData;
+                if (temp.nodeData == null || temp.nodeData == undefined) {
+                    return;
+                }
+                console.log(temp);
+                this.nodeData = temp.nodeData;
+                console.log(this.nodeData);
             },
-            loadData(parentCode) {
-                this.$http.get(this.$global.remote().resourceFindByParentCode, {parentCode: parentCode}, response => {
-                    let resources = response.result;
-                    let temp = new Array();
-                    for (let i = 0, len = resources.length; i < len; i++) {
-                        let res = resources[i];
-                        temp.push({
-                            id: res.tid,
-                            label: res.resourceName,
-                            data: res,
-                            children: []
-                        })
-                    }
-                    return temp;
-                }, fail => {
-                    this.$message.error(fail.message);
-                })
-            }
         },
+        mounted(){
+
+        }
     };
 </script>
 
@@ -126,7 +206,7 @@
     }
     .form-container{
         position: relative;
-        height: 1000px;
+        /*height: 1000px;*/
     }
    div.form-div{
        height: 47.8px;
@@ -163,5 +243,23 @@
         div.el-table__header-wrapper table{
             height: 47px !important;
         }
+    }
+    .el-tree{
+        width: 180px !important;
+    }
+    .container-top{
+        background-color: #a0cfff;
+        color:white;
+        height: 40px;
+        line-height: 40px;
+        padding-left: 10px;
+        font-size: 16px;
+        -webkit-border-radius: 3px;
+        -moz-border-radius: 3px;
+        border-radius: 3px;
+        border:none;
+    }
+    .mt20{
+        margin-top: 20px;
     }
 </style>
