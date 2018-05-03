@@ -37,45 +37,49 @@
                 <div class="form-container">
                     <div class="container-top">组织架构基本信息</div>
                     <el-container>
-                        <el-main style="padding: 20px;">
-                            <el-form label-width="100px" :model="nodeData" size="small" :inline="true">
-                                <div style="width: 100%">
+                        <el-main style="padding: 20px;height: 300px;">
+                            <el-form label-width="150px" :model="nodeData" size="small" :inline="true">
+                                <div    >
                                     <el-form-item label="菜单编码：">
                                         {{nodeData.resourceCode}}
                                     </el-form-item>
                                     <el-form-item label="菜单名称：">
                                         {{nodeData.resourceName}}
                                     </el-form-item>
-                                </div>
-                                <div>
                                     <el-form-item label="父级编码：">
                                         {{nodeData.parentCode}}
                                     </el-form-item>
+                                </div>
+                                <div>
                                     <el-form-item label="菜单路由：">
                                         {{nodeData.router}}
                                     </el-form-item>
+                                    <el-form-item label="菜单组件：">
+                                        {{nodeData.component}}
+                                    </el-form-item>
+                                    <el-form-item label="菜单图标：">
+                                        {{nodeData.nodeIcon}}
+                                    </el-form-item>
                                 </div>
-                                <el-form-item label="菜单组件：">
-                                    {{nodeData.component}}
-                                </el-form-item>
-                                <el-form-item label="菜单层级：">
-                                    {{nodeData.resourceLevel}}
-                                </el-form-item>
-                                <el-form-item label="菜单类型：">
-                                    {{nodeData.resourceType}}
-                                </el-form-item>
-                                <el-form-item label="展示顺序：">
-                                    {{nodeData.displayOrder}}
-                                </el-form-item>
-                                <el-form-item label="菜单图标：">
-                                    {{nodeData.nodeIcon}}
-                                </el-form-item>
-                                <el-form-item label="是否叶子节点：">
-                                    {{nodeData.leafFlag}}
-                                </el-form-item>
-                                <el-form-item label="备注：">
-                                    {{nodeData.notes}}
-                                </el-form-item>
+                                <div>
+                                    <el-form-item label="菜单层级：">
+                                        {{nodeData.resourceLevel}}
+                                    </el-form-item>
+                                    <el-form-item label="菜单类型：">
+                                        {{nodeData.resourceType}}
+                                    </el-form-item>
+                                    <el-form-item label="展示顺序：">
+                                        {{nodeData.displayOrder}}
+                                    </el-form-item>
+                                </div>
+                                <div>
+                                    <el-form-item label="是否叶子节点：">
+                                        {{nodeData.leafFlag}}
+                                    </el-form-item>
+                                    <el-form-item label="备注：">
+                                        {{nodeData.notes}}
+                                    </el-form-item>
+                                </div>
                             </el-form>
                         </el-main>
                     </el-container>
@@ -128,7 +132,7 @@
                     return resolve([{
                         code: 'console_1',
                         label: 'console系统',
-                        nodeData:{},
+                        nodeData: JSON.stringify(''),
                         isLeaf: false
                     }]);
                 }
@@ -149,7 +153,7 @@
                         temp.push({
                             code: res.resourceCode,
                             label: res.resourceName,
-                            nodeData: res,
+                            nodeData: JSON.stringify(res),
                             isLeaf: res.leafFlag == 'Y' ? true : false
                         })
                     }
@@ -158,20 +162,19 @@
                     this.$message.error(fail.message);
                 })
             },
+            handleNodeClick(data, node){
+                if ('console_1' == data.code) {
+                    return;
+                }
+                let temp = JSON.parse(data.nodeData);
+                if (temp == null || temp == undefined) {
+                    return;
+                }
+                this.nodeData = temp;
+            },
             handleNodeExpand(data) {
             },
             handleNodeCollapse(data){
-            },
-            handleNodeClick(data, node){
-                console.log(data);
-                console.log(node);
-                let temp = node.data.nodeData;
-                if (temp.nodeData == null || temp.nodeData == undefined) {
-                    return;
-                }
-                console.log(temp);
-                this.nodeData = temp.nodeData;
-                console.log(this.nodeData);
             },
         },
         mounted(){
@@ -181,7 +184,7 @@
 </script>
 
 
-<style lang="less">
+<style lang="less" scoped>
     .user-management-box{
         width: 100%;
         min-width: 1000px;
