@@ -63,10 +63,10 @@
                                 </div>
                                 <div>
                                     <el-form-item label="菜单层级：">
-                                        {{nodeData.resourceLevel}}
+                                        {{resourceLevel}}
                                     </el-form-item>
                                     <el-form-item label="菜单类型：">
-                                        {{nodeData.resourceType}}
+                                        {{resourceType}}
                                     </el-form-item>
                                     <el-form-item label="展示顺序：">
                                         {{nodeData.displayOrder}}
@@ -74,7 +74,10 @@
                                 </div>
                                 <div>
                                     <el-form-item label="是否叶子节点：">
-                                        {{nodeData.leafFlag}}
+                                        {{leafFlag}}
+                                    </el-form-item>
+                                    <el-form-item label="是否有效：">
+                                        {{active}}
                                     </el-form-item>
                                     <el-form-item label="备注：">
                                         {{nodeData.notes}}
@@ -176,6 +179,21 @@
             },
             handleNodeCollapse(data){
             },
+        },
+        computed: {
+            active(){
+                return this.$global.transformActive(this.nodeData.active);
+            },
+            leafFlag(){
+                return this.nodeData.leafFlag == 'Y' ? '是' : '否';
+            },
+            resourceLevel(){
+                return this.$global.getValueNameByTermsCodeAndValueCode('RESOURCES_LEVEL', this.nodeData.resourceLevel);
+            },
+            resourceType(){
+                let temp = this.$global.getValueNameByTermsCodeAndValueCode('JURISDICTION_TYPE', this.nodeData.resourceType);
+                return temp;
+            }
         },
         mounted(){
 

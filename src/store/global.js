@@ -95,6 +95,17 @@ export default {
         }
         return result;
     },
+    getValueNameByTermsCodeAndValueCode(termsCode, valueCode) {
+        if (tools.isEmpty(termsCode) || tools.isEmpty(valueCode)) {
+            return null;
+        }
+        let values = this.getTermsValueStore(termsCode);
+        for (let i = 0, len = values.length; i < len; i++){
+            if (valueCode == values[i].valueCode) {
+                return values[i].valueName;
+            }
+        }
+    },
     transformActive(cell) {
         let value = '';
         if (cell == 'Y') {
