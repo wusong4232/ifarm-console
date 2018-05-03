@@ -3,6 +3,7 @@ import {Message} from 'element-ui';
 import tools from '../tools';
 
 const global = {}
+global.menuStore = new Array();
 
 global.remoteUrl = {
     login: '/login',
@@ -102,5 +103,20 @@ export default {
             value = '无效';
         }
         return value;
+    },
+    setMenuCodeValueStore(menuData) {
+        for (let i = 0,len = menuData.length; i < len; i++) {
+            global.menuStore.push({
+                resourceCode: menuData[i].resourceCode,
+                resourceName: menuData[i].resourceName,
+            });
+            if (menuData[i].childrenNode != null && menuData[i].childrenNode.length > 0) {
+                this.setMenuCodeValueStore(menuData[i].childrenNode);
+            }
+        }
+    },
+    getMenuCodeValueStore(){
+        return global.menuStore;
     }
+
 }

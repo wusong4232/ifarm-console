@@ -88,8 +88,12 @@
                 this.reAddRouter();
                 sessionStorage.setItem('isAddRouters', 'true');
             }
-            this.$global.flashDictionary();
             this.$store.commit('addTabs',{route: '/home/index', name: '首页'});
+            //延迟3s加载数据字典
+            // setTimeout(function () {
+                this.$global.flashDictionary();
+                this.$global.setMenuCodeValueStore(this.$store.state.userMenu);
+            // }, 3000);
         }
     }
 </script>
