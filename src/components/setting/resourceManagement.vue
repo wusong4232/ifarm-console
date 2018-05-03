@@ -6,6 +6,9 @@
                     <el-button type="primary" @click="onAdd">新增</el-button>
                     <el-button type="primary" @click="onUpdate" :disabled="updateDisable">修改</el-button>
                     <el-button type="primary" @click="onDelete" :disabled="deleteDisable">删除</el-button>
+                    <el-button type="primary" @click="onUpdate" :disabled="addPermissionDisable">新增权限</el-button>
+                    <el-button type="primary" @click="onDelete" :disabled="updatePermissionDisable">修改权限</el-button>
+                    <el-button type="primary" @click="onDelete" :disabled="deletePermissionDisable">删除权限</el-button>
                 </el-form-item>
             </el-form>
         </div>
@@ -23,12 +26,14 @@
                 </div>
                 <div class="form-aside">
                     <el-tree
+                        lazy
                         show-checkbox
                         node-key="id"
-                        lazy
+                        :check-strictly="checkStrictly"
                         :load="loadNode"
                         :props="defaultProps"
                         :default-expand-all="defaultExpand"
+                        @check-change="handleCheckChange"
                         @node-expand="handleNodeExpand"
                         @node-collapse="handleNodeCollapse"
                         @node-click="handleNodeClick">
@@ -37,7 +42,7 @@
                 <div class="form-container">
                     <div class="container-top">组织架构基本信息</div>
                     <el-container>
-                        <el-main style="padding: 20px;height: 300px;">
+                        <el-main style="padding: 20px;height: 320px;">
                             <el-form label-position="right" label-width="110px" :model="nodeData" size="small" :inline="false">
                                 <div class="from-item-container">
                                     <div class="form-item-left">
@@ -90,15 +95,69 @@
                 </div>
             </el-container>
         </div>
+        <el-dialog
+            :title="resourceDialogTitle"
+            :visible.sync="resourceDialogVisible"
+            @close="resourceCloseDialog"
+            center>
+            <el-form label-width="120px" :model="form" :rules="rules" ref="form" size="small" :inline="true">
+                <el-input type="hidden" v-model="form.tid" auto-complete="off"></el-input>
+                <el-form-item label="菜单编码：">
+                    <el-input v-model="form.resourceCode" auto-complete="off"></el-input>
+                </el-form-item>
+                <el-form-item label="菜单名称：">
+                    <el-input v-model="form.resourceName" auto-complete="off"></el-input>
+                </el-form-item>
+                <el-form-item label="父级编码：">
+                    <el-input v-model="form.parentCode" auto-complete="off"></el-input>
+                </el-form-item>
+                <el-form-item label="菜单路由：">
+                    <el-input v-model="form.router" auto-complete="off"></el-input>
+                </el-form-item>
+                <el-form-item label="菜单组件：">
+                    <el-input v-model="form.component" auto-complete="off"></el-input>
+                </el-form-item>
+                <el-form-item label="菜单图标：">
+                    <el-input v-model="form.nodeIcon" auto-complete="off"></el-input>
+                </el-form-item>
+                <el-form-item label="菜单层级：">
+                    <el-input v-model="form.resourceLevel" auto-complete="off"></el-input>
+                </el-form-item>
+                <el-form-item label="菜单类型：">
+                    <el-input v-model="form.resourceType" auto-complete="off"></el-input>
+                </el-form-item>
+                <el-form-item label="展示顺序：">
+                    <el-input v-model="form.displayOrder" auto-complete="off"></el-input>
+                </el-form-item>
+                <el-form-item label="是否叶子节点：">
+                    <el-input v-model="form.leafFlag" auto-complete="off"></el-input>
+                </el-form-item>
+                <el-form-item label="是否有效：">
+                    <el-input v-model="form.active" auto-complete="off"></el-input>
+                </el-form-item>
+                <el-form-item label="备注：">
+                    <el-input v-model="form.notes" auto-complete="off"></el-input>
+                </el-form-item>
+            </el-form>
+            <span slot="footer" class="dialog-footer">
+                <el-button @click="resourceCloseDialog">取 消</el-button>
+                <el-button type="primary" @click="resourceHandleSubmit">确 定</el-button>
+              </span>
+        </el-dialog>
     </div>
 </template>
 <script>
     export default {
         data() {
             return {
+                checkStrictly: true,
                 defaultExpand: false,
                 updateDisable: true,
                 deleteDisable: true,
+                addPermissionDisable: true,
+                updatePermissionDisable: true,
+                deletePermissionDisable: true,
+                multipleSelection: [],
                 defaultProps:{
                     code: "code",
                     label: 'label',
@@ -106,6 +165,7 @@
                     isLeaf:'isLeaf'
                 },
                 nodeData: {
+                    tid: '',
                     resourceCode:'',
                     resourceName:'',
                     router:'',
@@ -117,18 +177,94 @@
                     nodeIcon:'',
                     leafFlag:'',
                     notes:''
+                },
+                resourceDialogTitle: '',
+                resourceDialogVisible: false,
+                form: {
+                    tid: '',
+                    resourceCode:'',
+                    resourceName:'',
+                    router:'',
+                    component:'',
+                    parentCode:'',
+                    resourceLevel:'',
+                    resourceType:'',
+                    displayOrder:'',
+                    nodeIcon:'',
+                    leafFlag:'',
+                    notes:''
+                },
+                rules: {
+
                 }
             }
         },
         methods: {
             onAdd(){
-
+                this.resourceDialogVisible = true;
+                this.resourceDialogTitle = '新增菜单';
             },
             onUpdate(){
-
+                if (this.multipleSelection.length > 1) {
+                    this.$message({message:"只能选择其中一条数据进行修改",type: 'warning'});
+                    return;
+                }
+                this.resourceDialogVisible = true;
+                this.resourceDialogTitle = '新增菜单';
+            },
+            resourceHandleSubmit(){
+                this.resourceCloseDialog();
             },
             onDelete(){
-
+                this.$confirm('确认删除选中数据, 是否继续?', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(() => {
+                    var array = [];
+                    this.multipleSelection.forEach((item) => {
+                        array.push(JSON.parse(item.nodeData).tid);
+                    });
+                    this.$http.post(this.$global.remote().resourceDelete, {ids: array}, response => {
+                        //TODO
+                        //删除节点
+                        this.$message({
+                            type: 'success',
+                            message: '删除成功!'
+                        });
+                    }, fail => {
+                        this.$message.error(fail.message);
+                    })
+                }).catch(() => {
+                    this.$message({
+                        type: 'info',
+                        message: '已取消删除'
+                    });
+                });
+            },
+            resourceCloseDialog(){
+                this.$refs.form.resetFields();
+                this.resourceDialogVisible = false;
+            },
+            handleCheckChange(data, checked){
+                if (checked) {
+                    this.multipleSelection.push(data);
+                } else {
+                    this.$global.removeArrayItemByValue(this.multipleSelection,data);
+                }
+                if (this.multipleSelection.length > 0) {
+                    this.updateDisable = false;
+                    this.deleteDisable = false;
+                    this.addPermissionDisable = false;
+                    this.updatePermissionDisable = false;
+                    this.deletePermissionDisable = false;
+                } else {
+                    this.updateDisable = true;
+                    this.deleteDisable = true;
+                    this.addPermissionDisable = true;
+                    this.updatePermissionDisable = true;
+                    this.deletePermissionDisable = true;
+                }
             },
             loadNode(node, resolve){
                 if (node.level === 0) {
@@ -218,16 +354,8 @@
         color: #333;
         line-height: 60px;
     }
-
-    .el-aside {
-        color: #333;
-    }
-    form.el-form{
-        height: 40px;
-    }
     .form-container{
         position: relative;
-        /*height: 1000px;*/
     }
    div.form-div{
        height: 47.8px;
@@ -245,25 +373,12 @@
         left:200px;
         right:0;
     }
-    .el-menu{
-        border:none !important;
-    }
     div.form-div .el-form-item--mini.el-form-item{
         margin-top: 10px;
         margin-left: 5px;
     }
     div.form-container .el-main{
         padding: 0;
-    }
-    div.scoped-table{
-        td div.cell{
-            line-height: 20px;
-        }
-    }
-    div.scoped-table{
-        div.el-table__header-wrapper table{
-            height: 47px !important;
-        }
     }
     .el-tree{
         width: 180px !important;
