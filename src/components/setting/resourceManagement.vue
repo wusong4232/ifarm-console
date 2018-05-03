@@ -38,50 +38,50 @@
                     <div class="container-top">组织架构基本信息</div>
                     <el-container>
                         <el-main style="padding: 20px;height: 300px;">
-                            <el-form label-width="150px" :model="nodeData" size="small" :inline="true">
-                                <div    >
-                                    <el-form-item label="菜单编码：">
-                                        {{nodeData.resourceCode}}
-                                    </el-form-item>
-                                    <el-form-item label="菜单名称：">
-                                        {{nodeData.resourceName}}
-                                    </el-form-item>
-                                    <el-form-item label="父级编码：">
-                                        {{nodeData.parentCode}}
-                                    </el-form-item>
-                                </div>
-                                <div>
-                                    <el-form-item label="菜单路由：">
-                                        {{nodeData.router}}
-                                    </el-form-item>
-                                    <el-form-item label="菜单组件：">
-                                        {{nodeData.component}}
-                                    </el-form-item>
-                                    <el-form-item label="菜单图标：">
-                                        {{nodeData.nodeIcon}}
-                                    </el-form-item>
-                                </div>
-                                <div>
-                                    <el-form-item label="菜单层级：">
-                                        {{resourceLevel}}
-                                    </el-form-item>
-                                    <el-form-item label="菜单类型：">
-                                        {{resourceType}}
-                                    </el-form-item>
-                                    <el-form-item label="展示顺序：">
-                                        {{nodeData.displayOrder}}
-                                    </el-form-item>
-                                </div>
-                                <div>
-                                    <el-form-item label="是否叶子节点：">
-                                        {{leafFlag}}
-                                    </el-form-item>
-                                    <el-form-item label="是否有效：">
-                                        {{active}}
-                                    </el-form-item>
-                                    <el-form-item label="备注：">
-                                        {{nodeData.notes}}
-                                    </el-form-item>
+                            <el-form label-position="right" label-width="110px" :model="nodeData" size="small" :inline="false">
+                                <div class="from-item-container">
+                                    <div class="form-item-left">
+                                        <el-form-item label="菜单编码：">
+                                            {{nodeData.resourceCode}}
+                                        </el-form-item>
+                                        <el-form-item label="菜单名称：">
+                                            {{nodeData.resourceName}}
+                                        </el-form-item>
+                                        <el-form-item label="父级编码：">
+                                            {{nodeData.parentCode}}
+                                        </el-form-item>
+                                        <el-form-item label="菜单路由：">
+                                            {{nodeData.router}}
+                                        </el-form-item>
+                                        <el-form-item label="菜单组件：">
+                                            {{nodeData.component}}
+                                        </el-form-item>
+                                        <el-form-item label="菜单图标：">
+                                            {{nodeData.nodeIcon}}
+                                        </el-form-item>
+                                    </div>
+                                    <div class="form-item-right">
+                                        <el-form-item label="菜单层级：">
+                                            {{resourceLevel}}
+                                        </el-form-item>
+                                        <el-form-item label="菜单类型：">
+                                            {{resourceType}}
+                                        </el-form-item>
+
+                                        <el-form-item label="展示顺序：">
+                                            {{nodeData.displayOrder}}
+                                        </el-form-item>
+
+                                        <el-form-item label="是否叶子节点：">
+                                            {{leafFlag}}
+                                        </el-form-item>
+                                        <el-form-item label="是否有效：">
+                                            {{active}}
+                                        </el-form-item>
+                                        <el-form-item label="备注：">
+                                            {{nodeData.notes}}
+                                        </el-form-item>
+                                    </div>
                                 </div>
                             </el-form>
                         </el-main>
@@ -282,5 +282,20 @@
     }
     .mt20{
         margin-top: 20px;
+    }
+    .from-item-container{
+        position: relative;
+    }
+    .form-item-left,.form-item-right{
+        position: absolute;
+        width: 50%;
+    }
+    .form-item-left{
+        top:0;
+        left:0;
+    }
+    .form-item-right{
+        top:0;
+        left: 50%;
     }
 </style>
