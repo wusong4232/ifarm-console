@@ -264,6 +264,7 @@
                     }, fail => {
                         this.$message.error(fail.message);
                     })*/
+
                 }).catch(() => {
                     this.$message({
                         type: 'info',
