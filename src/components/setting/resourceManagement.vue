@@ -28,6 +28,7 @@
                     <el-tree
                         lazy
                         show-checkbox
+                        ref="tree"
                         node-key="id"
                         :check-strictly="checkStrictly"
                         :load="loadNode"
@@ -108,8 +109,15 @@
                 <el-form-item label="菜单名称：">
                     <el-input v-model="form.resourceName" auto-complete="off"></el-input>
                 </el-form-item>
-                <el-form-item label="父级编码：">
-                    <el-input v-model="form.parentCode" auto-complete="off"></el-input>
+                <el-form-item label="父级菜单：">
+                    <el-select v-model="form.parentCode" filterable placeholder="请选择">
+                        <el-option
+                            v-for="item in resourceOptions"
+                            :key="item.resourceCode"
+                            :label="item.resourceName"
+                            :value="item.resourceCode">
+                        </el-option>
+                    </el-select>
                 </el-form-item>
                 <el-form-item label="菜单路由：">
                     <el-input v-model="form.router" auto-complete="off"></el-input>
@@ -121,19 +129,27 @@
                     <el-input v-model="form.nodeIcon" auto-complete="off"></el-input>
                 </el-form-item>
                 <el-form-item label="菜单层级：">
-                    <el-input v-model="form.resourceLevel" auto-complete="off"></el-input>
+                    <el-select v-model="form.resourceLevel" placeholder="请选择">
+                        <el-option v-for="item in resourceLevelItems" :label="item.valueName" :value="item.valueCode" :key="item.valueCode"></el-option>
+                    </el-select>
                 </el-form-item>
                 <el-form-item label="菜单类型：">
-                    <el-input v-model="form.resourceType" auto-complete="off"></el-input>
+                    <el-select v-model="form.resourceType" placeholder="请选择">
+                        <el-option v-for="item in resourceTypeItems" :label="item.valueName" :value="item.valueCode" :key="item.valueCode"></el-option>
+                    </el-select>
                 </el-form-item>
                 <el-form-item label="展示顺序：">
-                    <el-input v-model="form.displayOrder" auto-complete="off"></el-input>
+                    <el-input type="number" v-model="form.displayOrder" auto-complete="off"></el-input>
                 </el-form-item>
                 <el-form-item label="是否叶子节点：">
-                    <el-input v-model="form.leafFlag" auto-complete="off"></el-input>
+                    <el-checkbox-group v-model="form.leafFlag">
+                        <el-checkbox name="active"></el-checkbox>
+                    </el-checkbox-group>
                 </el-form-item>
                 <el-form-item label="是否有效：">
-                    <el-input v-model="form.active" auto-complete="off"></el-input>
+                    <el-checkbox-group v-model="form.active">
+                        <el-checkbox name="active"></el-checkbox>
+                    </el-checkbox-group>
                 </el-form-item>
                 <el-form-item label="备注：">
                     <el-input v-model="form.notes" auto-complete="off"></el-input>
@@ -216,6 +232,15 @@
                 this.resourceCloseDialog();
             },
             onDelete(){
+                let checkedNodes = this.$refs.tree.getCheckedNodes();
+                console.log(checkedNodes);
+                for (let i = 0, len = checkedNodes.length; i < len; i++) {
+                    let nodeData = JSON.parse(checkedNodes[i].data.nodeData);
+                    nodeData.active = 'N';
+                    checkedNodes[i].data.nodeData = JSON.stringify(nodeData);
+                    console.log(checkedNodes[i].data.nodeData);
+                }
+                console.log(checkedNodes);
                 this.$confirm('确认删除选中数据, 是否继续?', '提示', {
                     confirmButtonText: '确定',
                     cancelButtonText: '取消',
@@ -225,8 +250,12 @@
                     this.multipleSelection.forEach((item) => {
                         array.push(JSON.parse(item.nodeData).tid);
                     });
-                    this.$http.post(this.$global.remote().resourceDelete, {ids: array}, response => {
-                        //TODO
+                   /* this.$http.post(this.$global.remote().resourceDelete, {ids: array}, response => {
+                        let checkedNodes = this.$refs.tree.getCheckedNodes();
+                        console.log(checkedNodes);
+                        checkedNodes.forEach(item => {
+                           item.data.nodeData.active = 'N';
+                        });
                         //删除节点
                         this.$message({
                             type: 'success',
@@ -234,7 +263,7 @@
                         });
                     }, fail => {
                         this.$message.error(fail.message);
-                    })
+                    })*/
                 }).catch(() => {
                     this.$message({
                         type: 'info',
@@ -327,8 +356,16 @@
                 return this.$global.getValueNameByTermsCodeAndValueCode('RESOURCES_LEVEL', this.nodeData.resourceLevel);
             },
             resourceType(){
-                let temp = this.$global.getValueNameByTermsCodeAndValueCode('JURISDICTION_TYPE', this.nodeData.resourceType);
-                return temp;
+                return this.$global.getValueNameByTermsCodeAndValueCode('JURISDICTION_TYPE', this.nodeData.resourceType);;
+            },
+            resourceLevelItems(){
+                return this.$global.getTermsValueStore('RESOURCES_LEVEL');
+            },
+            resourceTypeItems(){
+                return this.$global.getTermsValueStore('JURISDICTION_TYPE');
+            },
+            resourceOptions(){
+                return this.$global.getMenuCodeValueStore();
             }
         },
         mounted(){
