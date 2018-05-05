@@ -3,9 +3,9 @@
         <div class="form-box">
             <el-form :inline="true" size="mini">
                 <el-form-item >
-                    <el-button type="primary" @click="onAdd">新增</el-button>
-                    <el-button type="primary" @click="onUpdate" :disabled="updateDisable">修改</el-button>
-                    <el-button type="primary" @click="onDelete" :disabled="deleteDisable">删除</el-button>
+                    <el-button type="primary" @click="onAdd">新增菜单</el-button>
+                    <el-button type="primary" @click="onUpdate" :disabled="updateDisable">修改菜单</el-button>
+                    <!--<el-button type="primary" @click="onDelete" :disabled="deleteDisable">删除</el-button>-->
                     <el-button type="primary" @click="onUpdate" :disabled="addPermissionDisable">新增权限</el-button>
                     <el-button type="primary" @click="onDelete" :disabled="updatePermissionDisable">修改权限</el-button>
                     <el-button type="primary" @click="onDelete" :disabled="deletePermissionDisable">删除权限</el-button>
@@ -41,7 +41,7 @@
                     </el-tree>
                 </div>
                 <div class="form-container">
-                    <div class="container-top">组织架构基本信息</div>
+                    <div class="container-top">菜单基本信息</div>
                     <el-container>
                         <el-main style="padding: 20px;height: 320px;">
                             <el-form label-position="right" label-width="110px" :model="nodeData" size="small" :inline="false">
@@ -68,21 +68,20 @@
                                     </div>
                                     <div class="form-item-right">
                                         <el-form-item label="菜单层级：">
-                                            {{resourceLevel}}
+                                            {{resourceLevelShow}}
                                         </el-form-item>
                                         <el-form-item label="菜单类型：">
-                                            {{resourceType}}
+                                            {{resourceTypeShow}}
                                         </el-form-item>
 
                                         <el-form-item label="展示顺序：">
                                             {{nodeData.displayOrder}}
                                         </el-form-item>
-
                                         <el-form-item label="是否叶子节点：">
-                                            {{leafFlag}}
+                                            {{leafFlagShow}}
                                         </el-form-item>
                                         <el-form-item label="是否有效：">
-                                            {{active}}
+                                            {{activeShow}}
                                         </el-form-item>
                                         <el-form-item label="备注：">
                                             {{nodeData.notes}}
@@ -93,6 +92,13 @@
                         </el-main>
                     </el-container>
                     <div class="container-top mt20">权限信息</div>
+                    <el-container>
+                        <el-main style="padding: 20px;height: 320px;">
+                            <el-checkbox-group>
+                                <el-checkbox v-for="item in nodeData.permissions" :label="item.permissionName" :key="item.permissionCode"></el-checkbox>
+                            </el-checkbox-group>
+                        </el-main>
+                    </el-container>
                 </div>
             </el-container>
         </div>
@@ -148,7 +154,7 @@
                 </el-form-item>
                 <el-form-item label="是否有效：">
                     <el-checkbox-group v-model="form.active">
-                        <el-checkbox name="active"></el-checkbox>
+                        <el-checkbox name="active" value=""></el-checkbox>
                     </el-checkbox-group>
                 </el-form-item>
                 <el-form-item label="备注：">
@@ -169,7 +175,7 @@
                 checkStrictly: true,
                 defaultExpand: false,
                 updateDisable: true,
-                deleteDisable: true,
+                // deleteDisable: true,
                 addPermissionDisable: true,
                 updatePermissionDisable: true,
                 deletePermissionDisable: true,
@@ -192,10 +198,12 @@
                     displayOrder:'',
                     nodeIcon:'',
                     leafFlag:'',
-                    notes:''
+                    notes:'',
+                    permissions:[]
                 },
                 resourceDialogTitle: '',
                 resourceDialogVisible: false,
+                resourceDialogCommand: '',
                 form: {
                     tid: '',
                     resourceCode:'',
@@ -219,6 +227,7 @@
             onAdd(){
                 this.resourceDialogVisible = true;
                 this.resourceDialogTitle = '新增菜单';
+                this.resourceDialogCommand = 'add';
             },
             onUpdate(){
                 if (this.multipleSelection.length > 1) {
@@ -226,21 +235,43 @@
                     return;
                 }
                 this.resourceDialogVisible = true;
-                this.resourceDialogTitle = '新增菜单';
+                this.resourceDialogTitle = '修改菜单';
+                this.resourceDialogCommand = 'update';
+                let tid = JSON.parse(this.multipleSelection[0].nodeData).tid
+                this.$http.get(this.$global.remote().resourceFind, {tid:tid}, response => {
+                    let data = response.result;
+                    if (this.$tools.isNotEmpty(data)) {
+                        this.form = data;
+                        this.form.active = data.active=='Y';
+                        this.form.leafFlag = data.leafFlag=='Y';
+                    }
+                }, fail => {
+                    this.$message.error(fail.message);
+                })
             },
             resourceHandleSubmit(){
-                this.resourceCloseDialog();
+                let url = '';
+                let param = {};
+                param.resourceDTO = this.form;
+                param.resourceDTO.active = this.form.active ? 'Y' : 'N';
+                param.resourceDTO.leafFlag = this.form.leafFlag ? 'Y' : 'N';
+                if (this.resourceDialogCommand == 'add') {
+                    url = this.$global.remote().resourceAdd;
+                } else if (this.resourceDialogCommand == 'update') {
+                    url = this.$global.remote().resourceUpdate;
+                }
+                this.$http.post(url, param, response => {
+                    this.resourceCloseDialog();
+
+                }, fail => {
+                    this.$message.error(fail.message);
+                })
+            },
+            resourceCloseDialog(){
+                this.$refs.form.resetFields();
+                this.resourceDialogVisible = false;
             },
             onDelete(){
-                let checkedNodes = this.$refs.tree.getCheckedNodes();
-                console.log(checkedNodes);
-                for (let i = 0, len = checkedNodes.length; i < len; i++) {
-                    let nodeData = JSON.parse(checkedNodes[i].data.nodeData);
-                    nodeData.active = 'N';
-                    checkedNodes[i].data.nodeData = JSON.stringify(nodeData);
-                    console.log(checkedNodes[i].data.nodeData);
-                }
-                console.log(checkedNodes);
                 this.$confirm('确认删除选中数据, 是否继续?', '提示', {
                     confirmButtonText: '确定',
                     cancelButtonText: '取消',
@@ -250,12 +281,7 @@
                     this.multipleSelection.forEach((item) => {
                         array.push(JSON.parse(item.nodeData).tid);
                     });
-                   /* this.$http.post(this.$global.remote().resourceDelete, {ids: array}, response => {
-                        let checkedNodes = this.$refs.tree.getCheckedNodes();
-                        console.log(checkedNodes);
-                        checkedNodes.forEach(item => {
-                           item.data.nodeData.active = 'N';
-                        });
+                   this.$http.post(this.$global.remote().resourceDelete, {ids: array}, response => {
                         //删除节点
                         this.$message({
                             type: 'success',
@@ -263,17 +289,13 @@
                         });
                     }, fail => {
                         this.$message.error(fail.message);
-                    })*/
+                    })
                 }).catch(() => {
                     this.$message({
                         type: 'info',
                         message: '已取消删除'
                     });
                 });
-            },
-            resourceCloseDialog(){
-                this.$refs.form.resetFields();
-                this.resourceDialogVisible = false;
             },
             handleCheckChange(data, checked){
                 if (checked) {
@@ -283,13 +305,13 @@
                 }
                 if (this.multipleSelection.length > 0) {
                     this.updateDisable = false;
-                    this.deleteDisable = false;
+                    // this.deleteDisable = false;
                     this.addPermissionDisable = false;
                     this.updatePermissionDisable = false;
                     this.deletePermissionDisable = false;
                 } else {
                     this.updateDisable = true;
-                    this.deleteDisable = true;
+                    // this.deleteDisable = true;
                     this.addPermissionDisable = true;
                     this.updatePermissionDisable = true;
                     this.deletePermissionDisable = true;
@@ -346,16 +368,16 @@
             },
         },
         computed: {
-            active(){
+            activeShow(){
                 return this.$global.transformActive(this.nodeData.active);
             },
-            leafFlag(){
+            leafFlagShow(){
                 return this.nodeData.leafFlag == 'Y' ? '是' : '否';
             },
-            resourceLevel(){
+            resourceLevelShow(){
                 return this.$global.getValueNameByTermsCodeAndValueCode('RESOURCES_LEVEL', this.nodeData.resourceLevel);
             },
-            resourceType(){
+            resourceTypeShow(){
                 return this.$global.getValueNameByTermsCodeAndValueCode('JURISDICTION_TYPE', this.nodeData.resourceType);;
             },
             resourceLevelItems(){

@@ -72,8 +72,11 @@ export default {
     remote(){
         return global.remoteUrl;
     },
-    flashDictionary : function () {
+    autoFlashDictionary: function(){
         setInterval(loadDictionary(),10 * 60 * 1000);
+    },
+    flashDictionary : function () {
+        loadDictionary();
     },
     getTermsCodeMap : function () {
         return global.termsCodeMap;
@@ -88,10 +91,14 @@ export default {
         let valueData = global.dictionary.get(termsCode);
         let result = new Array();
         for (let i = 0, len = valueData.length; i < len; i++) {
+            let code = valueData[i].valueCode;
+            if (tools.isNumber(code)) {
+                code = Number(code);
+            }
             result.push({
-                'valueCode': valueData[i].valueCode,
+                'valueCode': code,
                 'valueName': valueData[i].valueName
-            })
+            });
         }
         return result;
     },
@@ -119,7 +126,7 @@ export default {
         for (let i = 0,len = menuData.length; i < len; i++) {
             global.menuStore.push({
                 resourceCode: menuData[i].resourceCode,
-                resourceName: menuData[i].resourceName,
+                resourceName: menuData[i].resourceName
             });
             if (menuData[i].childrenNode != null && menuData[i].childrenNode.length > 0) {
                 this.setMenuCodeValueStore(menuData[i].childrenNode);

@@ -242,6 +242,7 @@
                     url = this.$global.remote().termsValueUpdate;
                 }
                 this.$http.post(url, param, response => {
+                    this.$global.flashDictionary();
                     this.closeDialog();
                     this.onSearch();
                 }, fail => {
@@ -259,6 +260,7 @@
                         array.push(item.tid);
                     });
                     this.$http.post(this.$global.remote().termsValueDelete, {ids: array}, response => {
+                        this.$global.flashDictionary();
                         this.$message({
                             type: 'success',
                             message: '删除成功!'

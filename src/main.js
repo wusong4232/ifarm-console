@@ -46,12 +46,17 @@ const vue = new Vue({
             //为什么刷新后这里的this.$route.path始终是"/"呢，所以先用dom方法判断
             if(domRoute==="/"||domRoute==="/login"){
                 this.$cookie.set('userName', "", -1);
-                this.$cookie.get('userInfo', "", -1);
-                this.$cookie.get('userMenu', "", -1);
+                // this.$cookie.get('userInfo', "", -1);
+                // this.$cookie.get('userMenu', "", -1);
+
+                sessionStorage.removeItem('userInfo');
+                sessionStorage.removeItem('userMenu');
             }
             if(domRoute!=="/"&&domRoute!=="/login"){
-                let userInfo = this.$cookie.get('userInfo');
-                let userMenu = this.$cookie.get('userMenu');
+                // let userInfo = this.$cookie.get('userInfo');
+                // let userMenu = this.$cookie.get('userMenu');
+                let userInfo = sessionStorage.getItem('userInfo');
+                let userMenu = sessionStorage.getItem('userMenu');
                 this.$store.commit("saveUserInfo", JSON.parse(userInfo));
                 this.$store.commit("saveUserMenu", JSON.parse(userMenu));
                 this.$store.commit('setActiveIndex', '/home/index');

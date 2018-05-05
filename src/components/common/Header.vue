@@ -31,7 +31,8 @@
         },
         methods:{
             getUserInfo(){
-                return JSON.parse(this.$cookie.get('userInfo'));
+                // return JSON.parse(this.$cookie.get('userInfo'));
+                return JSON.parse(sessionStorage.getItem('userInfo'));
             },
             handleCommand(command) {
                 if(command == 'logout'){
@@ -50,8 +51,10 @@
             },
             clearCookie : function(){
                 this.$cookie.set('userName','',-1);
-                this.$cookie.set('userInfo','',-1);
-                this.$cookie.set('userMenu','',-1);
+                // this.$cookie.set('userInfo','',-1);
+                // this.$cookie.set('userMenu','',-1);
+                sessionStorage.removeItem('userInfo');
+                sessionStorage.removeItem('userMenu');
             },
             clearStore : function(){
                 this.$store.commit("clearStore");
