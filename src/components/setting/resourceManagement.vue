@@ -291,6 +291,13 @@
             permissionCloseDialog(){
                 this.$refs.permissionForm.resetFields();
                 this.permissionVisible = false;
+                this.resetPermissionFormData();
+            },
+            resetPermissionFormData(){
+              this.permissionForm = {
+                  permissionCode: '',
+                  permissionName: ''
+              }
             },
             handlePermissionChange(){
                 if (this.checkPermissions.length > 0) {
@@ -351,6 +358,23 @@
             resourceCloseDialog(){
                 this.resourceDialogVisible = false;
                 this.$refs.form.resetFields();
+                this.resetFormData();
+            },
+            resetFormData(){
+              this.form = {
+                  tid: '',
+                  resourceCode:'',
+                  resourceName:'',
+                  router:'',
+                  component:'',
+                  parentCode:'',
+                  resourceLevel:'',
+                  resourceType:'',
+                  displayOrder:'',
+                  nodeIcon:'',
+                  leafFlag:'',
+                  notes:''
+              }
             },
             onDelete(){
                 this.$confirm('确认删除选中数据, 是否继续?', '提示', {
