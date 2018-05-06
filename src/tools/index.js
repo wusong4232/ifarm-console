@@ -1,5 +1,18 @@
 export default  {
     /**
+     * 删除数组元素
+     * @param arr
+     * @param val
+     */
+    removeArrayItemByValue: function(arr, val) {
+        for(var i=0; i<arr.length; i++) {
+            if(arr[i] == val) {
+                arr.splice(i, 1);
+                break;
+            }
+        }
+    },
+    /**
      * 判断空字符串
      * @param str
      * @returns {Boolean}

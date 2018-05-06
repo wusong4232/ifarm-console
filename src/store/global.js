@@ -42,6 +42,9 @@ global.remoteUrl = {
     resourceDelete: '/resource/delete',
     resourceAdd: '/resource/save',
     resourceUpdate: '/resource/update',
+    permissionAdd: '/resource/permission/save',
+    permissionUpdate: '/resource/permission/update',
+    permissionDelete: '/resource/permission/delete',
 }
 
 /**
@@ -138,12 +141,4 @@ export default {
     getMenuCodeValueStore(){
         return global.menuStore;
     },
-    removeArrayItemByValue: function(arr, val) {
-        for(var i=0; i<arr.length; i++) {
-            if(arr[i] == val) {
-                arr.splice(i, 1);
-                break;
-            }
-        }
-    }
 }

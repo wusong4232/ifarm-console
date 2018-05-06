@@ -29,7 +29,7 @@
                         lazy
                         show-checkbox
                         ref="tree"
-                        node-key="id"
+                        node-key="code"
                         :check-strictly="checkStrictly"
                         :load="loadNode"
                         :props="defaultProps"
@@ -176,8 +176,8 @@
                 <el-form-item prop="permissionCode" label="权限编码：">
                     <el-input v-model="permissionForm.permissionCode" auto-complete="off"></el-input>
                 </el-form-item>
-                <el-form-item prop="permissionCode" label="权限名称：">
-                    <el-input v-model="permissionForm.permissionCode" auto-complete="off"></el-input>
+                <el-form-item prop="permissionName" label="权限名称：">
+                    <el-input v-model="permissionForm.permissionName" auto-complete="off"></el-input>
                 </el-form-item>
             </el-form>
             <span slot="footer" class="dialog-footer">
@@ -253,6 +253,8 @@
                 permissionVisible: false,
                 permissionDialogCommand: '',
                 permissionForm: {
+                    tid: '',
+                    resourceTid: '',
                     permissionCode: '',
                     permissionName: ''
                 },
@@ -268,12 +270,37 @@
         },
         methods: {
             //permission
+            checkSelectedMenuSingle(){
+                if (this.multipleSelection.length > 1) {
+                    this.$message({message:"只能选择其中一个菜单操作",type: 'warning'});
+                    return false;
+                }
+                if (this.nodeData.resourceCode != JSON.parse(this.multipleSelection[0].nodeData).resourceCode) {
+                    this.$alert('选中菜单与展示数据不一致，请单击需要操作菜单！', '提示', {
+                        confirmButtonText: '确定',
+                        callback: action => {
+                            //TODO
+                        }
+                    });
+                    return false;
+                }
+                return true;
+            },
             onPermissionAdd(){
+                if (!this.checkSelectedMenuSingle()) {
+                    return;
+                }
                 this.permissionDialogTitle = '新增权限';
                 this.permissionVisible = true;
                 this.permissionDialogCommand = 'add';
+
+                let checkMenuData = JSON.parse(this.multipleSelection[0].nodeData);
+                this.permissionForm.resourceTid = checkMenuData.tid;
             },
             onPermissionUpdate(){
+                if (!this.checkSelectedMenuSingle()) {
+                    return;
+                }
                 if (this.checkPermissions.length > 1) {
                     this.$message({message:"只能选择其中一条数据进行修改",type: 'warning'});
                     return;
@@ -281,12 +308,77 @@
                 this.permissionDialogTitle = '更新权限';
                 this.permissionVisible = true;
                 this.permissionDialogCommand = 'update';
+
+                let permissionName = this.checkPermissions[0];
+                let checkMenuData = JSON.parse(this.multipleSelection[0].nodeData);
+                for (let i = 0, len = checkMenuData.permissions.length; i < len; i++) {
+                    let item = checkMenuData.permissions[i];
+                    if (permissionName == item.permissionName) {
+                        this.permissionForm = item;
+                        console.log(this.permissionForm);
+                        break;
+                    }
+                };
             },
             permissionHandleSubmit() {
-
+                let url = '';
+                if (this.permissionDialogCommand == 'add') {
+                    url = this.$global.remote().permissionAdd;
+                } else if (this.permissionDialogCommand == 'update') {
+                    url = this.$global.remote().permissionUpdate;
+                }
+                let temp = {
+                    resourceTid: this.permissionForm.resourceTid,
+                    permissionCode: this.permissionForm.permissionCode,
+                    permissionName: this.permissionForm.permissionName
+                }
+                this.$http.post(url, {permissionDTO: this.permissionForm}, response => {
+                    this.nodeData.permissions.push(temp);
+                    this.permissionCloseDialog();
+                }, fail => {
+                    this.$message.error(fail.message);
+                })
             },
             onPermissionDelete(){
+                if (!this.checkSelectedMenuSingle()) {
+                    return;
+                }
+                this.$confirm('确认删除选中数据, 是否继续?', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(() => {
+                    var array = [];
+                    let deleteData = [];
+                    for (let i = 0, len = this.checkPermissions.length; i < len; i++) {
+                        let permissionName = this.checkPermissions[i];
+                        this.nodeData.permissions.forEach((item) => {
+                            if (permissionName == item.permissionName) {
+                                array.push(item.tid);
+                                deleteData.push(item);
+                            }
+                        });
+                    }
 
+                    this.$http.post(this.$global.remote().permissionDelete, {ids: array}, response => {
+                        deleteData.forEach((item) => {
+                            this.$tools.removeArrayItemByValue(this.nodeData.permissions, item);
+                        });
+                        this.checkPermissions = [];
+                        //删除节点
+                        this.$message({
+                            type: 'success',
+                            message: '删除成功!'
+                        });
+                    }, fail => {
+                        this.$message.error(fail.message);
+                    })
+                }).catch(() => {
+                    this.$message({
+                        type: 'info',
+                        message: '已取消删除'
+                    });
+                });
             },
             permissionCloseDialog(){
                 this.$refs.permissionForm.resetFields();
@@ -406,7 +498,7 @@
                 if (checked) {
                     this.multipleSelection.push(data);
                 } else {
-                    this.$global.removeArrayItemByValue(this.multipleSelection,data);
+                    this.$tools.removeArrayItemByValue(this.multipleSelection,data);
                 }
                 if (this.multipleSelection.length > 0) {
                     this.updateDisable = false;
@@ -462,6 +554,9 @@
                     return;
                 }
                 this.nodeData = temp;
+                this.$refs.tree.setCheckedNodes([{
+                    code: temp.resourceCode
+                }]);
             },
             handleNodeExpand(data) {
             },
