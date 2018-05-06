@@ -6,9 +6,9 @@
                     <el-button type="primary" @click="onAdd">新增菜单</el-button>
                     <el-button type="primary" @click="onUpdate" :disabled="updateDisable">修改菜单</el-button>
                     <!--<el-button type="primary" @click="onDelete" :disabled="deleteDisable">删除</el-button>-->
-                    <el-button type="primary" @click="onUpdate" :disabled="addPermissionDisable">新增权限</el-button>
-                    <el-button type="primary" @click="onDelete" :disabled="updatePermissionDisable">修改权限</el-button>
-                    <el-button type="primary" @click="onDelete" :disabled="deletePermissionDisable">删除权限</el-button>
+                    <el-button type="primary" @click="onPermissionAdd" :disabled="addPermissionDisable">新增权限</el-button>
+                    <el-button type="primary" @click="onPermissionUpdate" :disabled="updatePermissionDisable">修改权限</el-button>
+                    <el-button type="primary" @click="onPermissionDelete" :disabled="deletePermissionDisable">删除权限</el-button>
                 </el-form-item>
             </el-form>
         </div>
@@ -20,7 +20,7 @@
                             <el-input placeholder="菜单名称"></el-input>
                         </el-form-item>
                         <el-form-item >
-                            <el-button type="primary" @click="onAdd">查询</el-button>
+                            <el-button type="primary" @click="onSearch">查询</el-button>
                         </el-form-item>
                     </el-form>
                 </div>
@@ -94,7 +94,7 @@
                     <div class="container-top mt20">权限信息</div>
                     <el-container>
                         <el-main style="padding: 20px;height: 320px;">
-                            <el-checkbox-group>
+                            <el-checkbox-group v-model="checkPermissions" @change="handlePermissionChange">
                                 <el-checkbox v-for="item in nodeData.permissions" :label="item.permissionName" :key="item.permissionCode"></el-checkbox>
                             </el-checkbox-group>
                         </el-main>
@@ -109,13 +109,13 @@
             center>
             <el-form label-width="120px" :model="form" :rules="rules" ref="form" size="small" :inline="true">
                 <el-input type="hidden" v-model="form.tid" auto-complete="off"></el-input>
-                <el-form-item label="菜单编码：">
+                <el-form-item prop="resourceCode" label="菜单编码：">
                     <el-input v-model="form.resourceCode" auto-complete="off"></el-input>
                 </el-form-item>
-                <el-form-item label="菜单名称：">
+                <el-form-item prop="resourceName" label="菜单名称：">
                     <el-input v-model="form.resourceName" auto-complete="off"></el-input>
                 </el-form-item>
-                <el-form-item label="父级菜单：">
+                <el-form-item prop="parentCode" label="父级菜单：">
                     <el-select v-model="form.parentCode" filterable placeholder="请选择">
                         <el-option
                             v-for="item in resourceOptions"
@@ -158,12 +158,31 @@
                     </el-checkbox-group>
                 </el-form-item>
                 <el-form-item label="备注：">
-                    <el-input v-model="form.notes" auto-complete="off"></el-input>
+                    <el-input type="textarea" v-model="form.notes" auto-complete="off"></el-input>
                 </el-form-item>
             </el-form>
             <span slot="footer" class="dialog-footer">
                 <el-button @click="resourceCloseDialog">取 消</el-button>
                 <el-button type="primary" @click="resourceHandleSubmit">确 定</el-button>
+              </span>
+        </el-dialog>
+        <el-dialog
+            :title="permissionDialogTitle"
+            :visible.sync="permissionVisible"
+            @close="permissionCloseDialog"
+            center>
+            <el-form label-width="120px" :model="permissionForm" :rules="permissionRules" ref="permissionForm" size="small" :inline="true">
+                <el-input type="hidden" v-model="permissionForm.tid" auto-complete="off"></el-input>
+                <el-form-item prop="permissionCode" label="权限编码：">
+                    <el-input v-model="permissionForm.permissionCode" auto-complete="off"></el-input>
+                </el-form-item>
+                <el-form-item prop="permissionCode" label="权限名称：">
+                    <el-input v-model="permissionForm.permissionCode" auto-complete="off"></el-input>
+                </el-form-item>
+            </el-form>
+            <span slot="footer" class="dialog-footer">
+                <el-button @click="permissionCloseDialog">取 消</el-button>
+                <el-button type="primary" @click="permissionHandleSubmit">确 定</el-button>
               </span>
         </el-dialog>
     </div>
@@ -176,9 +195,6 @@
                 defaultExpand: false,
                 updateDisable: true,
                 // deleteDisable: true,
-                addPermissionDisable: true,
-                updatePermissionDisable: true,
-                deletePermissionDisable: true,
                 multipleSelection: [],
                 defaultProps:{
                     code: "code",
@@ -219,11 +235,76 @@
                     notes:''
                 },
                 rules: {
-
+                    resourceCode: [
+                        { required: true, message: '请输入菜单编码', trigger: 'blur' }
+                    ],
+                    resourceName: [
+                        { required: true, message: '请输入菜单名称', trigger: 'blur' }
+                    ],
+                    parentCode: [
+                        { required: true, message: '请选择父级菜单', trigger: 'blur' }
+                    ]
+                },
+                checkPermissions: [],
+                addPermissionDisable: true,
+                updatePermissionDisable: true,
+                deletePermissionDisable: true,
+                permissionDialogTitle: '',
+                permissionVisible: false,
+                permissionDialogCommand: '',
+                permissionForm: {
+                    permissionCode: '',
+                    permissionName: ''
+                },
+                permissionRules: {
+                    permissionCode: [
+                        { required: true, message: '请输入权限编码', trigger: 'blur' }
+                    ],
+                    permissionName: [
+                        { required: true, message: '请输入权限名称', trigger: 'blur' }
+                    ],
                 }
             }
         },
         methods: {
+            //permission
+            onPermissionAdd(){
+                this.permissionDialogTitle = '新增权限';
+                this.permissionVisible = true;
+                this.permissionDialogCommand = 'add';
+            },
+            onPermissionUpdate(){
+                if (this.checkPermissions.length > 1) {
+                    this.$message({message:"只能选择其中一条数据进行修改",type: 'warning'});
+                    return;
+                }
+                this.permissionDialogTitle = '更新权限';
+                this.permissionVisible = true;
+                this.permissionDialogCommand = 'update';
+            },
+            permissionHandleSubmit() {
+
+            },
+            onPermissionDelete(){
+
+            },
+            permissionCloseDialog(){
+                this.$refs.permissionForm.resetFields();
+                this.permissionVisible = false;
+            },
+            handlePermissionChange(){
+                if (this.checkPermissions.length > 0) {
+                    this.updatePermissionDisable = false;
+                    this.deletePermissionDisable = false;
+                } else {
+                    this.updatePermissionDisable = true;
+                    this.deletePermissionDisable = true;
+                }
+            },
+            //resource
+            onSearch(){
+
+            },
             onAdd(){
                 this.resourceDialogVisible = true;
                 this.resourceDialogTitle = '新增菜单';
@@ -268,8 +349,8 @@
                 })
             },
             resourceCloseDialog(){
-                this.$refs.form.resetFields();
                 this.resourceDialogVisible = false;
+                this.$refs.form.resetFields();
             },
             onDelete(){
                 this.$confirm('确认删除选中数据, 是否继续?', '提示', {
@@ -307,14 +388,10 @@
                     this.updateDisable = false;
                     // this.deleteDisable = false;
                     this.addPermissionDisable = false;
-                    this.updatePermissionDisable = false;
-                    this.deletePermissionDisable = false;
                 } else {
                     this.updateDisable = true;
                     // this.deleteDisable = true;
                     this.addPermissionDisable = true;
-                    this.updatePermissionDisable = true;
-                    this.deletePermissionDisable = true;
                 }
             },
             loadNode(node, resolve){

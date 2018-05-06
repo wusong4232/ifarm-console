@@ -9,6 +9,7 @@ global.remoteUrl = {
     login: '/login',
     logout: '/logout',
     //user manage
+    userMenu:'/userMenu',
     userInfo: '/userInfo',
     userList: '/user/list',
     userFind: '/user/find',
@@ -34,6 +35,7 @@ global.remoteUrl = {
     roleAdd: '/role/save',
     roleUpdate: '/role/update',
     //resource manage
+    findMenuSelectStore: '/resource/findMenuSelectStore',
     resourceFindByParentCode: '/resource/findByParentCode',
     resourceList: '/resource/list',
     resourceFind: '/resource/find',
@@ -68,6 +70,14 @@ let loadDictionary = function() {
     })
 }
 
+let loadMenuSelectStore = function() {
+    apiAxios.get(global.remoteUrl.findMenuSelectStore, null, response => {
+        global.menuStore = response.result;
+    }, fail => {
+        Message.error(fail.message);
+    })
+}
+
 export default {
     remote(){
         return global.remoteUrl;
@@ -77,6 +87,9 @@ export default {
     },
     flashDictionary : function () {
         loadDictionary();
+    },
+    flashMenuSelectStore: function () {
+        loadMenuSelectStore();
     },
     getTermsCodeMap : function () {
         return global.termsCodeMap;
@@ -121,17 +134,6 @@ export default {
             value = '无效';
         }
         return value;
-    },
-    setMenuCodeValueStore(menuData) {
-        for (let i = 0,len = menuData.length; i < len; i++) {
-            global.menuStore.push({
-                resourceCode: menuData[i].resourceCode,
-                resourceName: menuData[i].resourceName
-            });
-            if (menuData[i].childrenNode != null && menuData[i].childrenNode.length > 0) {
-                this.setMenuCodeValueStore(menuData[i].childrenNode);
-            }
-        }
     },
     getMenuCodeValueStore(){
         return global.menuStore;

@@ -39,7 +39,8 @@
                     this.$http.get(this.$global.remote().logout,null,response => {
                         this.clearCookie();
                         this.clearStore();
-                        sessionStorage.removeItem('routers');
+                        //不需要router
+                        // sessionStorage.removeItem('routers');
                         this.$router.push('/login');
                     });
                 } else if (command == 'userInfo') {

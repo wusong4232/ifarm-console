@@ -1,11 +1,11 @@
 <template>
     <div class="sidebar">
-        <el-menu :default-active="onRoutes" class="el-menu-vertical-demo" background-color="#324157" text-color="#fff"
+        <el-menu :default-active="onRoutes" @open="handleOpen" class="el-menu-vertical-demo" background-color="#324157" text-color="#fff"
                  unique-opened router>
             <template v-for="item in itemsCopy">
                 <el-submenu :index="item.resourceCode"><!--二级菜单-->
                     <template slot="title"><i :class="item.nodeIcon"></i>{{ item.resourceName }}</template>
-                    <el-menu-item v-for="(subItem,i) in item.childrenNode" :key="i" :index="subItem.router">{{ subItem.resourceName }}
+                    <el-menu-item v-for="(subItem,i) in subItemCopy" :key="i" :index="subItem.router">{{ subItem.resourceName }}
                     </el-menu-item>
                 </el-submenu>
             </template>
@@ -15,14 +15,43 @@
 </template>
 
 <script>
+    import RouterUtils from '../../tools/RouterUtils';
     export default {
+        data(){
+          return {
+              menuData: new Map(),
+              subItemCopy: []
+          }
+        },
+        methods: {
+            handleOpen(index, indexPath){
+                let subMenu = this.menuData.get(index);
+                if (this.$tools.isEmpty(subMenu)) {
+                    this.$http.get(this.$global.remote().userMenu, {parentCode: index}, response => {
+                        subMenu = response.result;
+                        if (this.$tools.isNotEmpty(subMenu)) {
+                            this.menuData.set(index, subMenu);
+                            this.subItemCopy = subMenu;
+
+                            let routers = [];
+                            RouterUtils(routers,subMenu,'menu');
+                            this.$router.options.routes[2].children = routers;
+                            this.$router.addRoutes(this.$router.options.routes);//调用addRoutes添加路由
+                        }
+                    }, fail => {
+                        this.message.error(fail.message);
+                    });
+                } else {
+                    this.subItemCopy = subMenu;
+                }
+            }
+        },
         computed: {
             onRoutes() {
                 return this.$route.path.split('/')[2];
             },
             itemsCopy(){
-                let userMenu = this.$store.state.userMenu;
-                return userMenu[0].childrenNode;
+                return this.$store.state.userMenu;
             }
         }
     }

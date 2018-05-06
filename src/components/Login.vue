@@ -19,7 +19,7 @@
 </template>
 
 <script>
-    import MenuUtils from '../tools/MenuUtils';
+    import RouterUtils from '../tools/RouterUtils';
     export default {
         data: function(){
             return {
@@ -75,9 +75,10 @@
                 })
             },
             addUserRouters : function (userMenus) {
-                let routes = [];
-                MenuUtils(routes,userMenus,'menu');
-                sessionStorage.setItem('routers',JSON.stringify(routes));
+                //登录后加载的都是模块 不需要router
+                // let routes = [];
+                // RouterUtils(routes,userMenus,'menu');
+                // sessionStorage.setItem('routers',JSON.stringify(routes));
             }
         }
     }

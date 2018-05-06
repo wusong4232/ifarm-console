@@ -19,7 +19,7 @@
     </div>
 </template>
 <script>
-    import MenuUtils from '../../tools/MenuUtils';
+    import RouterUtils from '../../tools/RouterUtils';
     export default {
         methods: {
             // tab切换时，动态的切换路由
@@ -44,14 +44,14 @@
                     }
                 }
             },
-            reAddRouter: function () {
-                let routers = []
-                    , routerData = JSON.parse(sessionStorage.getItem('routers'));
-                MenuUtils(routers,routerData,'router');
-
-                this.$router.options.routes[2].children = routers;
-                this.$router.addRoutes(this.$router.options.routes);//调用addRoutes添加路由
-            }
+            // reAddRouter: function () {
+                // let routers = []
+                //     , routerData = JSON.parse(sessionStorage.getItem('routers'));
+                // RouterUtils(routers,routerData,'router');
+                //
+                // this.$router.options.routes[2].children = routers;
+                // this.$router.addRoutes(this.$router.options.routes);//调用addRoutes添加路由
+            // }
         },
         computed: {
             options () {
@@ -84,15 +84,16 @@
             }
         },
         mounted(){
-            if (this.$tools.isEmpty(sessionStorage.getItem('isAddRouters'))) {
-                this.reAddRouter();
-                sessionStorage.setItem('isAddRouters', 'true');
-            }
+            //初始加载的是模块 不需要router
+            // if (this.$tools.isEmpty(sessionStorage.getItem('isAddRouters'))) {
+            //     this.reAddRouter();
+            //     sessionStorage.setItem('isAddRouters', 'true');
+            // }
             this.$store.commit('addTabs',{route: '/home/index', name: '首页'});
             //延迟3s加载数据字典
             // setTimeout(function () {
                 this.$global.autoFlashDictionary();
-                this.$global.setMenuCodeValueStore(this.$store.state.userMenu);
+                this.$global.flashMenuSelectStore();
             // }, 3000);
         }
     }
