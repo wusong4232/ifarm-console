@@ -441,33 +441,41 @@
                 } else if (this.resourceDialogCommand == 'update') {
                     url = this.$global.remote().resourceUpdate;
                 }
-                if (this.resourceDialogCommand == 'update') {
-                    let data = JSON.parse(this.multipleSelection[0].nodeData);
-                    console.log(data);
-
-                    let permissionTemp = data.permissions;
-                    this.form.permissions = permissionTemp;
-                    let newData = {
-                        code: this.form.resourceCode,
-                        label: this.form.resourceName,
-                        nodeData: JSON.stringify(this.form),
-                        isLeaf: this.form.leafFlag
-                    }
-                    console.log(newData);
-                    this.$refs.tree.updateKeyChildren(this.form.resourceCode, newData);
-                }
-                this.resourceCloseDialog();
-             /*   this.$http.post(url, param, response => {
-                    //TODO
+                this.$http.post(url, param, response => {
+                    let nodeData = response.result;
+                    this.nodeData = nodeData;
                     if (this.resourceDialogCommand == 'update') {
-                        let data = this.multipleSelection[0];
-                        console.log(data);
-                        // this.$refs.tree.updateKeyChildren()
+                        let newData = {
+                            code: this.form.resourceCode,
+                            label: this.form.resourceName,
+                            nodeData: JSON.stringify(nodeData),
+                            isLeaf: this.form.leafFlag
+                        }
+                        let node = this.$refs.tree.getNode(this.form.resourceCode);
+                        node.data = newData;
+                        node.checked = true;
+
+                        for (let i = 0, len = this.multipleSelection.length; i < len; i++) {
+                            if (JSON.parse(this.multipleSelection[i].nodeData).resourceCode == this.form.resourceCode) {
+                                this.multipleSelection.splice(i, 1);
+                                break;
+                            }
+                        }
+                        this.multipleSelection.push(newData);
+                    } else if (this.resourceDialogCommand == 'add') {
+                        let refKey = this.form.parentCode;
+                        let newData = {
+                            code: this.form.resourceCode,
+                            label: this.form.resourceName,
+                            nodeData: JSON.stringify(nodeData),
+                            isLeaf: this.form.leafFlag
+                        }
+                        this.$refs.tree.append(newData, refKey);
                     }
                     this.resourceCloseDialog();
                 }, fail => {
                     this.$message.error(fail.message);
-                })*/
+                })
             },
             resourceCloseDialog(){
                 this.resourceDialogVisible = false;
