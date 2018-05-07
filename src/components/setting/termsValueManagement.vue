@@ -103,41 +103,47 @@
             :visible.sync="dialogVisible"
             @close="closeDialog"
             center>
-            <el-form label-width="80px" :model="form" :rules="rules" ref="form" size="small" :inline="true">
-                <el-input type="hidden" v-model="form.tid" auto-complete="off"></el-input>
-                <el-form-item label="值编码" prop="valueCode">
-                    <el-input v-model="form.valueCode" auto-complete="off" :disabled="formColumnDisable"></el-input>
-                </el-form-item>
-                <el-form-item label="值名称" prop="valueName">
-                    <el-input v-model="form.valueName" auto-complete="off"></el-input>
-                </el-form-item>
-                <el-form-item label="选择词条" v-show="!editShow" prop="termsCode">
-                    <el-select v-model="form.termsCode" filterable placeholder="请选择">
-                        <el-option
-                            v-for="item in termsCodeOptions"
-                            :key="item.termsCode"
-                            :label="item.termsName"
-                            :value="item.termsCode">
-                        </el-option>
-                    </el-select>
-                </el-form-item>
-                <el-form-item label="词条编码" prop="termsCode" v-show="editShow">
-                    <el-input v-model="form.termsCode" auto-complete="off" :disabled="formColumnDisable"></el-input>
-                </el-form-item>
-                <el-form-item label="词条名称" prop="termsName" v-show="editShow">
-                    <el-input v-model="form.termsName" auto-complete="off" :disabled="formColumnDisable"></el-input>
-                </el-form-item>
-                <el-form-item label="顺序" prop="valueSeq">
-                    <el-input type="number" v-model="form.valueSeq" auto-complete="off"></el-input>
-                </el-form-item>
-                <el-form-item label="状态">
-                    <el-select v-model="form.active" placeholder="请选择">
-                        <el-option v-for="item in activeItems" :label="item.valueName" :value="item.valueCode" :key="item.valueCode"></el-option>
-                    </el-select>
-                </el-form-item>
-                <el-form-item label="备注">
-                    <el-input type="textarea" v-model="form.notes" auto-complete="off"></el-input>
-                </el-form-item>
+            <el-form class="termsValueManageBox" label-width="80px" :model="form" :rules="rules" ref="form" size="small" :inline="false">
+                <div class="termsValueManageLeft">
+                    <el-input type="hidden" v-model="form.tid" auto-complete="off"></el-input>
+                    <el-form-item label="值编码" prop="valueCode">
+                        <el-input v-model="form.valueCode" auto-complete="off" :disabled="formColumnDisable"></el-input>
+                    </el-form-item>
+                    <el-form-item label="值名称" prop="valueName">
+                        <el-input v-model="form.valueName" auto-complete="off"></el-input>
+                    </el-form-item>
+                    <el-form-item label="选择词条" v-show="!editShow" prop="termsCode">
+                        <el-select v-model="form.termsCode" filterable placeholder="请选择">
+                            <el-option
+                                v-for="item in termsCodeOptions"
+                                :key="item.termsCode"
+                                :label="item.termsName"
+                                :value="item.termsCode">
+                            </el-option>
+                        </el-select>
+                    </el-form-item>
+                    <el-form-item label="词条编码" prop="termsCode" v-show="editShow">
+                        <el-input v-model="form.termsCode" auto-complete="off" :disabled="formColumnDisable"></el-input>
+                    </el-form-item>
+                </div>
+                <div class="termsValueManageRight">
+
+                    <el-form-item label="词条名称" prop="termsName" v-show="editShow">
+                        <el-input v-model="form.termsName" auto-complete="off" :disabled="formColumnDisable"></el-input>
+                    </el-form-item>
+                    <el-form-item label="顺序" prop="valueSeq">
+                        <el-input type="number" v-model="form.valueSeq" auto-complete="off"></el-input>
+                    </el-form-item>
+                    <el-form-item label="状态">
+                        <el-select v-model="form.active" placeholder="请选择">
+                            <el-option v-for="item in activeItems" :label="item.valueName" :value="item.valueCode" :key="item.valueCode"></el-option>
+                        </el-select>
+                    </el-form-item>
+                    <el-form-item label="备注">
+                        <el-input type="textarea" v-model="form.notes" auto-complete="off"></el-input>
+                    </el-form-item>
+                </div>
+
             </el-form>
             <span slot="footer" class="dialog-footer">
                 <el-button @click="closeDialog">取 消</el-button>
@@ -346,5 +352,21 @@
     }
     .el-form textarea {
         width: 475px;
+    }
+    .termsValueManageBox{
+        position: relative;
+        height:180px;
+    }
+    .termsValueManageLeft{
+        position: absolute;
+        left:0;
+        top:-25px;
+        width: 50%;
+    }
+    .termsValueManageRight{
+        position: absolute;
+        right: 0;
+        top:0;
+        width: 50%;
     }
 </style>

@@ -78,22 +78,27 @@
             :visible.sync="dialogVisible"
             @close="closeDialog"
             center>
-            <el-form label-width="80px" :model="form" :rules="rules" ref="form" size="small" :inline="true">
-                <el-input type="hidden" v-model="form.tid" auto-complete="off"></el-input>
-                <el-form-item label="词条编码" prop="termsCode">
-                    <el-input v-model="form.termsCode" auto-complete="off" :disabled="formColumnDisable"></el-input>
-                </el-form-item>
-                <el-form-item label="词条名称" prop="termsName">
-                    <el-input v-model="form.termsName" auto-complete="off"></el-input>
-                </el-form-item>
-                <el-form-item label="状态">
-                    <el-select v-model="form.active" placeholder="请选择">
-                        <el-option v-for="item in activeItems" :label="item.valueName" :value="item.valueCode" :key="item.valueCode"></el-option>
-                    </el-select>
-                </el-form-item>
-                <el-form-item label="备注">
-                    <el-input type="textarea" v-model="form.notes" auto-complete="off"></el-input>
-                </el-form-item>
+            <el-form class="termsCodeManageBox" label-width="80px" :model="form" :rules="rules" ref="form" size="small" :inline="false">
+                <div class="termsCodeManageLeft">
+                    <el-input type="hidden" v-model="form.tid" auto-complete="off"></el-input>
+                    <el-form-item label="词条编码" prop="termsCode">
+                        <el-input v-model="form.termsCode" auto-complete="off" :disabled="formColumnDisable"></el-input>
+                    </el-form-item>
+                    <el-form-item label="词条名称" prop="termsName">
+                        <el-input v-model="form.termsName" auto-complete="off"></el-input>
+                    </el-form-item>
+                </div>
+                <div class="termsCodeManageRight">
+                    <el-form-item label="状态">
+                        <el-select v-model="form.active" placeholder="请选择">
+                            <el-option v-for="item in activeItems" :label="item.valueName" :value="item.valueCode" :key="item.valueCode"></el-option>
+                        </el-select>
+                    </el-form-item>
+                    <el-form-item label="备注">
+                        <el-input type="textarea" v-model="form.notes" auto-complete="off"></el-input>
+                    </el-form-item>
+                </div>
+
             </el-form>
             <span slot="footer" class="dialog-footer">
                 <el-button @click="closeDialog">取 消</el-button>
@@ -285,5 +290,21 @@
     }
     .el-form textarea {
         width: 475px;
+    }
+    .termsCodeManageBox{
+        position: relative;
+        height: 120px;
+    }
+    .termsCodeManageLeft{
+        position: absolute;
+        top:-15px;
+        left:0;
+        width: 50%;
+    }
+    .termsCodeManageRight{
+        position: absolute;
+        top:10px;
+        right:0;
+        width: 50%;
     }
 </style>
