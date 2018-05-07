@@ -315,7 +315,6 @@
                     let item = checkMenuData.permissions[i];
                     if (permissionName == item.permissionName) {
                         this.permissionForm = item;
-                        console.log(this.permissionForm);
                         break;
                     }
                 };
@@ -387,6 +386,8 @@
             },
             resetPermissionFormData(){
               this.permissionForm = {
+                  tid: '',
+                  resourceTid: '',
                   permissionCode: '',
                   permissionName: ''
               }
@@ -440,12 +441,33 @@
                 } else if (this.resourceDialogCommand == 'update') {
                     url = this.$global.remote().resourceUpdate;
                 }
-                this.$http.post(url, param, response => {
-                    this.resourceCloseDialog();
+                if (this.resourceDialogCommand == 'update') {
+                    let data = JSON.parse(this.multipleSelection[0].nodeData);
+                    console.log(data);
 
+                    let permissionTemp = data.permissions;
+                    this.form.permissions = permissionTemp;
+                    let newData = {
+                        code: this.form.resourceCode,
+                        label: this.form.resourceName,
+                        nodeData: JSON.stringify(this.form),
+                        isLeaf: this.form.leafFlag
+                    }
+                    console.log(newData);
+                    this.$refs.tree.updateKeyChildren(this.form.resourceCode, newData);
+                }
+                this.resourceCloseDialog();
+             /*   this.$http.post(url, param, response => {
+                    //TODO
+                    if (this.resourceDialogCommand == 'update') {
+                        let data = this.multipleSelection[0];
+                        console.log(data);
+                        // this.$refs.tree.updateKeyChildren()
+                    }
+                    this.resourceCloseDialog();
                 }, fail => {
                     this.$message.error(fail.message);
-                })
+                })*/
             },
             resourceCloseDialog(){
                 this.resourceDialogVisible = false;
