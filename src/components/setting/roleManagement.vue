@@ -101,6 +101,23 @@
                 <el-button type="primary" @click="handleSubmit">确 定</el-button>
               </span>
         </el-dialog>
+        <el-dialog
+            title="分配权限"
+            :visible.sync="permissionDialogVisible"
+            @close="closePermissionDialog"
+            center>
+            <el-tree
+                lazy
+                show-checkbox
+                :props="props"
+                :load="loadNode"
+                >
+            </el-tree>
+            <span slot="footer" class="dialog-footer">
+                <el-button @click="closePermissionDialog">取 消</el-button>
+                <el-button type="primary" @click="handlePermissionSubmit">确 定</el-button>
+              </span>
+        </el-dialog>
     </div>
 </template>
 
@@ -143,10 +160,63 @@
                     roleName: [{
                         required: true, message: '请输入词条名称', trigger: 'blur'
                     }]
+                },
+                permissionDialogVisible: false,
+                props: {
+                    tid:'',
+                    code:'',
+                    label:'',
+                    isLeaf:''
                 }
             }
         },
         methods: {
+            //permission
+            onDistributePermission(){
+                this.permissionDialogVisible = true;
+            },
+            handlePermissionSubmit(){
+
+            },
+            closePermissionDialog(){
+                this.permissionDialogVisible = false;
+            },
+            loadNode(node, resolve){
+                if (node.level === 0) {
+                    return resolve([{
+                        code: 'console_1',
+                        label: 'console系统',
+                        nodeData: JSON.stringify(''),
+                        isLeaf: false
+                    }]);
+                }
+                if (node.level >= 1) {
+                    let parentCode = node.data.code;
+                    this.loadData(parentCode, resolve)
+                }
+            },
+            loadData(parentCode, resolve) {
+                this.$http.get(this.$global.remote().resourceFindByParentCode, {parentCode: parentCode}, response => {
+                    let resources = response.result;
+                    if (resources == null || resources == undefined || resources.length == 0) {
+                        return resolve([]);
+                    }
+                    let temp = new Array();
+                    for (let i = 0, len = resources.length; i < len; i++) {
+                        let res = resources[i];
+                        temp.push({
+                            tid: res.tid,
+                            code: res.resourceCode,
+                            label: res.resourceName,
+                            isLeaf: res.leafFlag == 'Y' ? true : false
+                        })
+                    }
+                    return resolve(temp);
+                }, fail => {
+                    this.$message.error(fail.message);
+                })
+            },
+            //role
             onSearch() {
                 this.searchFormData.pageNo = this.currentPage;
                 this.searchFormData.pageSize = this.pageSize;
