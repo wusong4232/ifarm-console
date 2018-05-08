@@ -94,6 +94,7 @@
             // setTimeout(function () {
                 this.$global.autoFlashDictionary();
                 this.$global.flashMenuSelectStore();
+                this.$global.flashRoleStore();
             // }, 3000);
         }
     }

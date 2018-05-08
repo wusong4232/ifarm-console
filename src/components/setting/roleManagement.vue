@@ -20,6 +20,7 @@
                     <el-button type="primary" @click="onAdd">新增</el-button>
                     <el-button type="primary" @click="onUpdate" :disabled="updateDisable">修改</el-button>
                     <el-button type="primary" @click="onDelete" :disabled="deleteDisable">删除</el-button>
+                    <el-button type="primary" @click="onDistributePermission" :disabled="disDisable">分配权限</el-button>
                 </el-form-item>
             </el-form>
         </div>
@@ -118,6 +119,7 @@
                 roleInfoDTOS: [],
                 updateDisable: true,
                 deleteDisable: true,
+                disDisable: true,
                 //多选数组
                 multipleSelection: [],
                 currentPage: 1,
@@ -155,6 +157,9 @@
                     this.$message.error(fail.message);
                 })
             },
+            onDistributePermission(){
+
+            },
             onAdd(){
                 this.dialogTitle = '新增角色';
                 this.dialogVisible = true;
@@ -167,12 +172,12 @@
                     return;
                 }
                 this.dialogTitle = '更新角色';
-                this.dialogVisible = true;
                 this.dialogCommand = 'update';
                 this.formColumnDisable = true;
                 let tid = this.multipleSelection[0].tid;
                 this.$http.get(this.$global.remote().roleFind, {tid:tid}, response => {
                     this.form = response.result;
+                    this.dialogVisible = true;
                 }, fail => {
                     this.$message.error(fail.message);
                 })
@@ -189,6 +194,7 @@
                 this.$http.post(url, param, response => {
                     this.closeDialog();
                     this.onSearch();
+                    this.$global.flashRoleStore();
                 }, fail => {
                     this.$message.error(fail.message);
                 })
@@ -209,6 +215,7 @@
                             message: '删除成功!'
                         });
                         this.onSearch();
+                        this.$global.flashRoleStore();
                     }, fail => {
                         this.$message.error(fail.message);
                     })
@@ -224,9 +231,11 @@
                 if (val.length > 0) {
                     this.updateDisable = false;
                     this.deleteDisable = false;
+                    this.disDisable = false;
                 } else {
                     this.updateDisable = true;
                     this.deleteDisable = true;
+                    this.disDisable = true;
                 }
 
             },
@@ -246,6 +255,16 @@
             closeDialog(){
                 this.dialogVisible = false;
                 this.$refs.form.resetFields();
+                this.resetForm();
+            },
+            resetForm(){
+                this.form = {
+                    tid: '',
+                    roleCode: '',
+                    roleName: '',
+                    notes: '',
+                    active: ''
+                }
             },
             handleActive(row, column, cellValue, index){
                 return this.$global.transformActive(cellValue);

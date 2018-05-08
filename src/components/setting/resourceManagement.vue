@@ -95,7 +95,7 @@
                     <el-container>
                         <el-main style="padding: 20px;height: 320px;">
                             <el-checkbox-group v-model="checkPermissions" @change="handlePermissionChange">
-                                <el-checkbox v-for="item in nodeData.permissions" :label="item.permissionName" :key="item.permissionCode"></el-checkbox>
+                                <el-checkbox v-for="item in nodeData.permissions" :disabled="item.editAble == false" :label="item.permissionName" :key="item.permissionCode"></el-checkbox>
                             </el-checkbox-group>
                         </el-main>
                     </el-container>
@@ -252,11 +252,13 @@
                 permissionDialogTitle: '',
                 permissionVisible: false,
                 permissionDialogCommand: '',
+                permissionEditResourceCode: '',
                 permissionForm: {
                     tid: '',
                     resourceTid: '',
                     permissionCode: '',
-                    permissionName: ''
+                    permissionName: '',
+                    editAble: true
                 },
                 permissionRules: {
                     permissionCode: [
@@ -296,6 +298,7 @@
 
                 let checkMenuData = JSON.parse(this.multipleSelection[0].nodeData);
                 this.permissionForm.resourceTid = checkMenuData.tid;
+                this.permissionEditResourceCode = checkMenuData.resourceCode;
             },
             onPermissionUpdate(){
                 if (!this.checkSelectedMenuSingle()) {
@@ -306,11 +309,11 @@
                     return;
                 }
                 this.permissionDialogTitle = '更新权限';
-                this.permissionVisible = true;
                 this.permissionDialogCommand = 'update';
 
                 let permissionName = this.checkPermissions[0];
                 let checkMenuData = JSON.parse(this.multipleSelection[0].nodeData);
+                this.permissionEditResourceCode = checkMenuData.resourceCode;
                 for (let i = 0, len = checkMenuData.permissions.length; i < len; i++) {
                     let item = checkMenuData.permissions[i];
                     if (permissionName == item.permissionName) {
@@ -318,6 +321,7 @@
                         break;
                     }
                 };
+                this.permissionVisible = true;
             },
             permissionHandleSubmit() {
                 let url = '';
@@ -326,13 +330,8 @@
                 } else if (this.permissionDialogCommand == 'update') {
                     url = this.$global.remote().permissionUpdate;
                 }
-                let temp = {
-                    resourceTid: this.permissionForm.resourceTid,
-                    permissionCode: this.permissionForm.permissionCode,
-                    permissionName: this.permissionForm.permissionName
-                }
-                this.$http.post(url, {permissionDTO: this.permissionForm}, response => {
-                    this.nodeData.permissions.push(temp);
+                this.$http.post(url, {resourceCode: this.permissionEditResourceCode,permissionDTO: this.permissionForm}, response => {
+                    this.updateTreeNode(response.result);
                     this.permissionCloseDialog();
                 }, fail => {
                     this.$message.error(fail.message);
@@ -347,22 +346,20 @@
                     cancelButtonText: '取消',
                     type: 'warning'
                 }).then(() => {
+                    let checkMenuData = JSON.parse(this.multipleSelection[0].nodeData);
+                    this.permissionEditResourceCode = checkMenuData.resourceCode;
                     var array = [];
-                    let deleteData = [];
                     for (let i = 0, len = this.checkPermissions.length; i < len; i++) {
                         let permissionName = this.checkPermissions[i];
                         this.nodeData.permissions.forEach((item) => {
                             if (permissionName == item.permissionName) {
                                 array.push(item.tid);
-                                deleteData.push(item);
                             }
                         });
                     }
 
-                    this.$http.post(this.$global.remote().permissionDelete, {ids: array}, response => {
-                        deleteData.forEach((item) => {
-                            this.$tools.removeArrayItemByValue(this.nodeData.permissions, item);
-                        });
+                    this.$http.post(this.$global.remote().permissionDelete, {resourceCode: this.permissionEditResourceCode,ids: array}, response => {
+                        this.updateTreeNode(response.result);
                         this.checkPermissions = [];
                         //删除节点
                         this.$message({
@@ -389,7 +386,8 @@
                   tid: '',
                   resourceTid: '',
                   permissionCode: '',
-                  permissionName: ''
+                  permissionName: '',
+                  editAble: true
               }
             },
             handlePermissionChange(){
@@ -415,7 +413,6 @@
                     this.$message({message:"只能选择其中一条数据进行修改",type: 'warning'});
                     return;
                 }
-                this.resourceDialogVisible = true;
                 this.resourceDialogTitle = '修改菜单';
                 this.resourceDialogCommand = 'update';
                 let tid = JSON.parse(this.multipleSelection[0].nodeData).tid
@@ -426,9 +423,30 @@
                         this.form.active = data.active=='Y';
                         this.form.leafFlag = data.leafFlag=='Y';
                     }
+                    this.resourceDialogVisible = true;
                 }, fail => {
                     this.$message.error(fail.message);
                 })
+            },
+            updateTreeNode(nodeData){
+                this.nodeData = nodeData;
+                let newData = {
+                    code: nodeData.resourceCode,
+                    label: nodeData.resourceName,
+                    nodeData: JSON.stringify(nodeData),
+                    isLeaf: nodeData.leafFlag
+                }
+                let node = this.$refs.tree.getNode(nodeData.resourceCode);
+                node.data = newData;
+                node.checked = true;
+
+                for (let i = 0, len = this.multipleSelection.length; i < len; i++) {
+                    if (JSON.parse(this.multipleSelection[i].nodeData).resourceCode == nodeData.resourceCode) {
+                        this.multipleSelection.splice(i, 1);
+                        break;
+                    }
+                }
+                this.multipleSelection.push(newData);
             },
             resourceHandleSubmit(){
                 let url = '';
@@ -445,6 +463,8 @@
                     let nodeData = response.result;
                     this.nodeData = nodeData;
                     if (this.resourceDialogCommand == 'update') {
+                        this.updateTreeNode(nodeData);
+                        /*
                         let newData = {
                             code: this.form.resourceCode,
                             label: this.form.resourceName,
@@ -462,6 +482,7 @@
                             }
                         }
                         this.multipleSelection.push(newData);
+                        */
                     } else if (this.resourceDialogCommand == 'add') {
                         let refKey = this.form.parentCode;
                         let newData = {

@@ -172,12 +172,12 @@
                     return;
                 }
                 this.dialogTitle = '更新词条';
-                this.dialogVisible = true;
                 this.dialogCommand = 'update';
                 this.formColumnDisable = true;
                 let tid = this.multipleSelection[0].tid;
                 this.$http.get(this.$global.remote().termsCodeFind, {tid:tid}, response => {
                     this.form = response.result;
+                    this.dialogVisible = true;
                 }, fail => {
                     this.$message.error(fail.message);
                 })
@@ -253,6 +253,15 @@
             closeDialog(){
                 this.dialogVisible = false;
                 this.$refs.form.resetFields();
+            },
+            resetForm() {
+                this.form = {
+                    tid: '',
+                    termsCode: '',
+                    termsName: '',
+                    notes: '',
+                    active: ''
+                }
             },
             handleActive(row, column, cellValue, index){
                 return this.$global.transformActive(cellValue);

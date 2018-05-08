@@ -16,6 +16,7 @@ global.remoteUrl = {
     userDelete: '/user/delete',
     userAdd: '/user/save',
     userUpdate: '/user/update',
+    distributeRole: '/user/distributeRole',
     //terms manage
     dictionary: '/terms/dictionary',
     termsCodeList: '/terms/code/list',
@@ -34,6 +35,8 @@ global.remoteUrl = {
     roleDelete: '/role/delete',
     roleAdd: '/role/save',
     roleUpdate: '/role/update',
+    findAllRole: '/role/findAllRole',
+    findRoleByUserId: '/role/findRoleByUserId',
     //resource manage
     findMenuSelectStore: '/resource/findMenuSelectStore',
     resourceFindByParentCode: '/resource/findByParentCode',
@@ -76,6 +79,25 @@ let loadDictionary = function() {
 let loadMenuSelectStore = function() {
     apiAxios.get(global.remoteUrl.findMenuSelectStore, null, response => {
         global.menuStore = response.result;
+    }, fail => {
+        Message.error(fail.message);
+    })
+}
+
+let loadRoleStore = function () {
+    apiAxios.get(global.remoteUrl.findAllRole, null, response => {
+        let roles = response.result;
+        let roleStore = [];
+        if (tools.isNotEmpty(roles)) {
+            roles.forEach((role, index) => {
+                roleStore.push({
+                    label: role.roleName,
+                    code: role.roleCode,
+                    key: role.tid,
+                });
+            });
+        }
+        global.roleStore = roleStore;
     }, fail => {
         Message.error(fail.message);
     })
@@ -141,4 +163,10 @@ export default {
     getMenuCodeValueStore(){
         return global.menuStore;
     },
+    flashRoleStore(){
+        loadRoleStore();
+    },
+    getRoleStore() {
+        return global.roleStore;
+    }
 }

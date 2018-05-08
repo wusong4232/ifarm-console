@@ -226,13 +226,13 @@
                     return;
                 }
                 this.dialogTitle = '更新字典值';
-                this.dialogVisible = true;
                 this.dialogCommand = 'update';
                 this.formColumnDisable = true;
                 this.editShow = true;
                 let tid = this.multipleSelection[0].tid;
                 this.$http.get(this.$global.remote().termsValueFind, {tid:tid}, response => {
                     this.form = response.result;
+                    this.dialogVisible = true;
                 }, fail => {
                     this.$message.error(fail.message);
                 })
@@ -309,6 +309,19 @@
             closeDialog(){
                 this.dialogVisible = false;
                 this.$refs.form.resetFields();
+                this.resetForm();
+            },
+            resetForm(){
+              this.form = {
+                  tid: '',
+                  valueCode: '',
+                  valueName: '',
+                  termsCode: '',
+                  termsName: '',
+                  valueSeq: 1,
+                  notes: '',
+                  active: '',
+              }
             },
             handleActive(row, column, cellValue, index){
                 return this.$global.transformActive(cellValue);

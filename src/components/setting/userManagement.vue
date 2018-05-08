@@ -23,6 +23,7 @@
                     <el-button type="primary" @click="onAdd">新增</el-button>
                     <el-button type="primary" @click="onUpdate" :disabled="updateDisable">修改</el-button>
                     <el-button type="primary" @click="onDelete" :disabled="deleteDisable">删除</el-button>
+                    <el-button type="primary" @click="onDistributeRole" :disabled="disDisable">分配角色</el-button>
                 </el-form-item>
             </el-form>
         </div>
@@ -138,6 +139,26 @@
                 <el-button type="primary" @click="handleSubmit">确 定</el-button>
               </span>
         </el-dialog>
+        <el-dialog
+            title="分配角色"
+            :visible.sync="roleDialogVisible"
+            @close="closeRoleDialog"
+            center style="height: 900px;">
+            <template>
+                <!--:filter-method="filterMethod"-->
+                <!--filter-placeholder="请输入城市拼音"-->
+                <el-transfer
+                    filterable
+                    :titles="['未分配角色', '已分配角色']"
+                    v-model="userRoles"
+                    :data="roleStore">
+                </el-transfer>
+            </template>
+            <span slot="footer" class="dialog-footer">
+                <el-button @click="closeRoleDialog">取 消</el-button>
+                <el-button type="primary" @click="handleRoleSubmit">确 定</el-button>
+              </span>
+        </el-dialog>
     </div>
 </template>
 
@@ -157,6 +178,7 @@
                 userInfoDTOS: [],
                 updateDisable: true,
                 deleteDisable: true,
+                disDisable: true,
                 //多选数组
                 multipleSelection: [],
                 currentPage: 1,
@@ -218,10 +240,48 @@
                     deptCode: [{
                         required: true, message: '请输入部门', trigger: 'blur'
                     }]
-                }
+                },
+                roleDialogVisible: false,
+                roleStore: [],
+                userRoles: [],
             }
         },
         methods: {
+            //role
+            onDistributeRole(){
+                if (this.multipleSelection.length > 1) {
+                    this.$message({message:"只能选择其中一条数据进行分配角色",type: 'warning'});
+                    return;
+                }
+                this.roleStore = this.$global.getRoleStore();
+                let userId = this.multipleSelection[0].tid;
+                this.$http.get(this.$global.remote().findRoleByUserId, {userId:userId}, response => {
+                    let roles = response.result;
+                    let userRoles = [];
+                    if (this.$tools.isNotEmpty(roles)) {
+                        roles.forEach((role, index) => {
+                            userRoles.push(role.tid);
+                        });
+                    }
+                    this.userRoles = userRoles;
+                }, fail => {
+                    this.$message.error(fail.message);
+                });
+                this.roleDialogVisible = true;
+            },
+            handleRoleSubmit(){
+                let userId = this.multipleSelection[0].tid;
+                this.$http.post(this.$global.remote().distributeRole, {userId:userId,ids:this.userRoles}, response => {
+                    this.closeRoleDialog();
+                }, fail => {
+                    this.$message.error(fail.message);
+                })
+            },
+            closeRoleDialog(){
+              this.roleDialogVisible = false;
+              this.userRoles = [];
+            },
+            //user
             onSearch() {
                 this.searchFormData.pageNo = this.currentPage;
                 this.searchFormData.pageSize = this.pageSize;
@@ -244,12 +304,12 @@
                     return;
                 }
                 this.dialogTitle = '更新用户';
-                this.dialogVisible = true;
                 this.dialogCommand = 'update';
                 this.formColumnDisable = true;
                 let tid = this.multipleSelection[0].tid;
                 this.$http.get(this.$global.remote().userFind, {tid:tid}, response => {
                     this.form = response.result;
+                    this.dialogVisible = true;
                 }, fail => {
                     this.$message.error(fail.message);
                 })
@@ -301,9 +361,11 @@
                 if (val.length > 0) {
                     this.updateDisable = false;
                     this.deleteDisable = false;
+                    this.disDisable = false;
                 } else {
                     this.updateDisable = true;
                     this.deleteDisable = true;
+                    this.disDisable = true;
                 }
 
             },
@@ -322,7 +384,24 @@
             },
             closeDialog(){
                 this.dialogVisible = false;
+                //form表单
                 this.$refs.form.resetFields();
+                //重置数据
+                this.resetForm();
+            },
+            resetForm(){
+                this.form = {
+                    tid: '',
+                    userName: '',
+                    password: '',
+                    nickName: '',
+                    email: '',
+                    mobileNo: '',
+                    empCode: '',
+                    deptCode: '',
+                    notes: '',
+                    active: ''
+                }
             },
             handleActive(row, column, cellValue, index){
                 return this.$global.transformActive(cellValue);
@@ -332,7 +411,7 @@
             activeItems(){
                 return this.$global.getTermsValueStore('DATA_STATUE');
             }
-        }
+        },
     }
 </script>
 
