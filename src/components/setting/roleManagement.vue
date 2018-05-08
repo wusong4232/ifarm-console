@@ -131,7 +131,8 @@
 
 <script>
     export default {
-        data() { const data = [{
+        data() {
+            const data = [{
             id: 1,
             label: '一级 1',
             permissions: ['菜单','新增','更新','删除'],
@@ -226,7 +227,6 @@
         methods: {
             //permission
             onDistributePermission(){
-                console.log('onDistributePermission');
                 this.permissionDialogVisible = true;
             },
             handlePermissionSubmit(){
