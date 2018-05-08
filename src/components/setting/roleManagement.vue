@@ -424,4 +424,12 @@
     .el-form textarea {
         width: 475px;
     }
+    .custom-tree-node {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        font-size: 14px;
+        padding-right: 8px;
+    }
 </style>
