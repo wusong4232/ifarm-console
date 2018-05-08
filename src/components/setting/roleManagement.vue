@@ -107,11 +107,19 @@
             @close="closePermissionDialog"
             center>
             <el-tree
-                lazy
+                :data="data5"
                 show-checkbox
-                :props="props"
-                :load="loadNode"
-                >
+                node-key="id"
+                default-expand-all
+                :expand-on-click-node="false">
+                  <span class="custom-tree-node" slot-scope="{ node, data }">
+                    <span>{{ node.label }}</span>
+                    <div style="margin-right: 100px;">
+                      <el-checkbox-group >
+                        <el-checkbox v-for="item in data.permissions"  :label="item" :key="item"></el-checkbox>
+                      </el-checkbox-group>
+                    </div>
+                  </span>
             </el-tree>
             <span slot="footer" class="dialog-footer">
                 <el-button @click="closePermissionDialog">取 消</el-button>
@@ -123,8 +131,53 @@
 
 <script>
     export default {
-        data() {
+        data() { const data = [{
+            id: 1,
+            label: '一级 1',
+            permissions: ['菜单','新增','更新','删除'],
+            children: [{
+                        id: 4,
+                        label: '二级 1-1',
+                        permissions: ['菜单','新增','更新','删除'],
+                        children: [{
+                            id: 9,
+                            label: '三级 1-1-1',
+                            permissions: ['更新','删除'],
+                        }, {
+                            id: 10,
+                            label: '三级 1-1-2',
+                            permissions: ['菜单','新增','更新','删除'],
+                        }]
+                    }]
+                }, {
+                    id: 2,
+                    label: '一级 2',
+                    permissions: ['菜单','新增'],
+                    children: [{
+                        id: 5,
+                        label: '二级 2-1',
+                        permissions: ['菜单','新增','更新','删除'],
+                    }, {
+                        id: 6,
+                        label: '二级 2-2',
+                        permissions: ['菜单','新增','更新','删除'],
+                    }]
+                }, {
+                    id: 3,
+                    label: '一级 3',
+                    permissions: ['菜单','新增','更新','删除'],
+                    children: [{
+                        id: 7,
+                        label: '二级 3-1',
+                        permissions: ['菜单','新增','更新','删除'],
+                    }, {
+                        id: 8,
+                        label: '二级 3-2',
+                        permissions: ['菜单','新增','更新','删除'],
+                    }]
+                }];
             return {
+                data5: JSON.parse(JSON.stringify(data)),
                 searchFormData:{
                     roleInfoDTO : {
                         roleCode: '',
@@ -173,6 +226,7 @@
         methods: {
             //permission
             onDistributePermission(){
+                console.log('onDistributePermission');
                 this.permissionDialogVisible = true;
             },
             handlePermissionSubmit(){
@@ -226,9 +280,6 @@
                 },fail => {
                     this.$message.error(fail.message);
                 })
-            },
-            onDistributePermission(){
-
             },
             onAdd(){
                 this.dialogTitle = '新增角色';
