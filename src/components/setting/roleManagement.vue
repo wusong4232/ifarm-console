@@ -108,7 +108,7 @@
             @close="closePermissionDialog"
             center>
             <el-tree
-                ref="tree"
+                ref="resourceTree"
                 :data="distributeStore"
                 :props="props"
                 show-checkbox
@@ -176,6 +176,8 @@
                 permissionDialogVisible: false,
                 distributeStore: {},
                 roleDistributeStore: [],
+                roleResources: [],
+                rolePermissions: [],
                 props: {
                     tid:'',
                     code:'',
@@ -199,18 +201,48 @@
             },
             //permission
             onDistributePermission(){
+                if (this.multipleSelection.length > 1) {
+                    this.$message({message:"只能选择其中一条数据进行修改",type: 'warning'});
+                    return;
+                }
+                let roleId = this.multipleSelection[0].tid;
                 this.distributeStore = this.$global.getDistributeStore();
-                this.$http.get(this.$global.remote().findRoleDistributeResource, null, response => {
-                    let roleDistributeSrc = '';
+                this.$http.get(this.$global.remote().findRoleDistributeResource, {roleId:roleId}, response => {
                     if (this.$tools.isNotEmpty(response.result)) {
-
+                        let roleDistributeSrc = response.result;
+                        this.handlePermissionItem(roleDistributeSrc, this.roleResources, this.rolePermissions);
+                        this.roleDistributeStore = this.rolePermissions;
+                        this.handleResourceItem(this.distributeStore, this.roleResources);
                     }
+                    this.permissionDialogVisible = true;
                 }, fail => {
                     this.$message.error(fail.message);
                 });
-
-                console.log(this.distributeStore);
-                this.permissionDialogVisible = true;
+            },
+            handleResourceItem(store, roleResources) {
+                store.forEach((item) => {
+                    if (roleResources.indexOf(item.tid) > 0) {
+                        console.log(item.tid);
+                        let node = this.$refs.resourceTree.getNode(item.tid);
+                        node.checked = true;
+                    }
+                    if (item.children.length > 0) {
+                        this.handleResourceItem(item.children, roleResources);
+                    }
+                })
+            },
+            handlePermissionItem(store, resources, permissions) {
+                store.forEach((item) => {
+                    resources.push(item.tid);
+                    if (item.permissions.length > 0) {
+                        item.permissions.forEach((permission) => {
+                            permissions.push(permission.tid);
+                        })
+                    }
+                    if (item.children.length > 0) {
+                        this.handlePermissionItem(item.children, resources, permissions);
+                    }
+                })
             },
             handlePermissionSubmit(){
                 console.log(this.roleDistributeStore);
