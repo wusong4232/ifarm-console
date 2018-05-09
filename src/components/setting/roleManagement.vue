@@ -102,11 +102,13 @@
               </span>
         </el-dialog>
         <el-dialog
+            width="70%"
             title="分配权限"
             :visible.sync="permissionDialogVisible"
             @close="closePermissionDialog"
             center>
             <el-tree
+                ref="tree"
                 :data="distributeStore"
                 :props="props"
                 show-checkbox
