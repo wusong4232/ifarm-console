@@ -107,16 +107,18 @@
             @close="closePermissionDialog"
             center>
             <el-tree
-                :data="data5"
+                :data="distributeStore"
+                :props="props"
                 show-checkbox
-                node-key="id"
-                default-expand-all
-                :expand-on-click-node="false">
+                node-key="tid"
+                @check-change="handleCheckChange"
+                @node-click="handleNodeClick"
+                default-expand-all>
                   <span class="custom-tree-node" slot-scope="{ node, data }">
-                    <span>{{ node.label }}</span>
+                    <span>{{ data.label }}</span>
                     <div style="margin-right: 100px;">
-                      <el-checkbox-group >
-                        <el-checkbox v-for="item in data.permissions"  :label="item" :key="item"></el-checkbox>
+                      <el-checkbox-group v-model="roleDistributeStore">
+                        <el-checkbox v-for="item in data.permissions"  :label="item.tid" :key="item.tid">{{item.permissionName}}</el-checkbox>
                       </el-checkbox-group>
                     </div>
                   </span>
@@ -132,53 +134,7 @@
 <script>
     export default {
         data() {
-            const data = [{
-            id: 1,
-            label: '一级 1',
-            permissions: ['菜单','新增','更新','删除'],
-            children: [{
-                        id: 4,
-                        label: '二级 1-1',
-                        permissions: ['菜单','新增','更新','删除'],
-                        children: [{
-                            id: 9,
-                            label: '三级 1-1-1',
-                            permissions: ['更新','删除'],
-                        }, {
-                            id: 10,
-                            label: '三级 1-1-2',
-                            permissions: ['菜单','新增','更新','删除'],
-                        }]
-                    }]
-                }, {
-                    id: 2,
-                    label: '一级 2',
-                    permissions: ['菜单','新增'],
-                    children: [{
-                        id: 5,
-                        label: '二级 2-1',
-                        permissions: ['菜单','新增','更新','删除'],
-                    }, {
-                        id: 6,
-                        label: '二级 2-2',
-                        permissions: ['菜单','新增','更新','删除'],
-                    }]
-                }, {
-                    id: 3,
-                    label: '一级 3',
-                    permissions: ['菜单','新增','更新','删除'],
-                    children: [{
-                        id: 7,
-                        label: '二级 3-1',
-                        permissions: ['菜单','新增','更新','删除'],
-                    }, {
-                        id: 8,
-                        label: '二级 3-2',
-                        permissions: ['菜单','新增','更新','删除'],
-                    }]
-                }];
             return {
-                data5: JSON.parse(JSON.stringify(data)),
                 searchFormData:{
                     roleInfoDTO : {
                         roleCode: '',
@@ -216,6 +172,8 @@
                     }]
                 },
                 permissionDialogVisible: false,
+                distributeStore: {},
+                roleDistributeStore: [],
                 props: {
                     tid:'',
                     code:'',
@@ -225,50 +183,38 @@
             }
         },
         methods: {
+            handleCheckChange(data, checked){
+                console.log('handleCheckChange data : ');
+                console.log(data);
+                console.log('handleCheckChange checked: ');
+                console.log(checked);
+            },
+            handleNodeClick(data, node) {
+                console.log('handleNodeClick data');
+                console.log(data);
+                console.log('handleNodeClick data');
+                console.log(node);
+            },
             //permission
             onDistributePermission(){
+                this.distributeStore = this.$global.getDistributeStore();
+                this.$http.get(this.$global.remote().findRoleDistributeResource, null, response => {
+                    let roleDistributeSrc = '';
+                    if (this.$tools.isNotEmpty(response.result)) {
+
+                    }
+                }, fail => {
+                    this.$message.error(fail.message);
+                });
+
+                console.log(this.distributeStore);
                 this.permissionDialogVisible = true;
             },
             handlePermissionSubmit(){
-
+                console.log(this.roleDistributeStore);
             },
             closePermissionDialog(){
                 this.permissionDialogVisible = false;
-            },
-            loadNode(node, resolve){
-                if (node.level === 0) {
-                    return resolve([{
-                        code: 'console_1',
-                        label: 'console系统',
-                        nodeData: JSON.stringify(''),
-                        isLeaf: false
-                    }]);
-                }
-                if (node.level >= 1) {
-                    let parentCode = node.data.code;
-                    this.loadData(parentCode, resolve)
-                }
-            },
-            loadData(parentCode, resolve) {
-                this.$http.get(this.$global.remote().resourceFindByParentCode, {parentCode: parentCode}, response => {
-                    let resources = response.result;
-                    if (resources == null || resources == undefined || resources.length == 0) {
-                        return resolve([]);
-                    }
-                    let temp = new Array();
-                    for (let i = 0, len = resources.length; i < len; i++) {
-                        let res = resources[i];
-                        temp.push({
-                            tid: res.tid,
-                            code: res.resourceCode,
-                            label: res.resourceName,
-                            isLeaf: res.leafFlag == 'Y' ? true : false
-                        })
-                    }
-                    return resolve(temp);
-                }, fail => {
-                    this.$message.error(fail.message);
-                })
             },
             //role
             onSearch() {

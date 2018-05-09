@@ -95,6 +95,7 @@
                 this.$global.autoFlashDictionary();
                 this.$global.flashMenuSelectStore();
                 this.$global.flashRoleStore();
+                this.$global.flashDistributeStore();
             // }, 3000);
         }
     }

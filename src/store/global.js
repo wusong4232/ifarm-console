@@ -37,6 +37,7 @@ global.remoteUrl = {
     roleUpdate: '/role/update',
     findAllRole: '/role/findAllRole',
     findRoleByUserId: '/role/findRoleByUserId',
+
     //resource manage
     findMenuSelectStore: '/resource/findMenuSelectStore',
     resourceFindByParentCode: '/resource/findByParentCode',
@@ -48,6 +49,8 @@ global.remoteUrl = {
     permissionAdd: '/resource/permission/save',
     permissionUpdate: '/resource/permission/update',
     permissionDelete: '/resource/permission/delete',
+    findAllDistributeResource: '/resource/findAllDistributeResource',
+    findRoleDistributeResource: '/resource/findRoleDistributeResource',
 }
 
 /**
@@ -98,6 +101,18 @@ let loadRoleStore = function () {
             });
         }
         global.roleStore = roleStore;
+    }, fail => {
+        Message.error(fail.message);
+    })
+}
+
+let loadDistributeResourceStore = function () {
+    apiAxios.get(global.remoteUrl.findAllDistributeResource, null, response => {
+        let store = {};
+        if (tools.isNotEmpty(response.result)) {
+            store = response.result;
+        }
+        global.distributeStore = JSON.parse(JSON.stringify(store));
     }, fail => {
         Message.error(fail.message);
     })
@@ -168,5 +183,12 @@ export default {
     },
     getRoleStore() {
         return global.roleStore;
+    },
+    flashDistributeStore() {
+        loadDistributeResourceStore();
+    },
+    getDistributeStore() {
+        return global.distributeStore;
     }
+
 }
