@@ -188,16 +188,8 @@
         },
         methods: {
             handleCheckChange(data, checked){
-                console.log('handleCheckChange data : ');
-                console.log(data);
-                console.log('handleCheckChange checked: ');
-                console.log(checked);
             },
             handleNodeClick(data, node) {
-                console.log('handleNodeClick data');
-                console.log(data);
-                console.log('handleNodeClick data');
-                console.log(node);
             },
             //permission
             onDistributePermission(){
@@ -207,6 +199,7 @@
                 }
                 let roleId = this.multipleSelection[0].tid;
                 this.distributeStore = this.$global.getDistributeStore();
+                this.permissionDialogVisible = true;
                 this.$http.get(this.$global.remote().findRoleDistributeResource, {roleId:roleId}, response => {
                     if (this.$tools.isNotEmpty(response.result)) {
                         let roleDistributeSrc = response.result;
@@ -214,15 +207,14 @@
                         this.roleDistributeStore = this.rolePermissions;
                         this.handleResourceItem(this.distributeStore, this.roleResources);
                     }
-                    this.permissionDialogVisible = true;
+
                 }, fail => {
                     this.$message.error(fail.message);
                 });
             },
             handleResourceItem(store, roleResources) {
                 store.forEach((item) => {
-                    if (roleResources.indexOf(item.tid) > 0) {
-                        console.log(item.tid);
+                    if (roleResources.indexOf(item.tid) >= 0) {
                         let node = this.$refs.resourceTree.getNode(item.tid);
                         node.checked = true;
                     }
