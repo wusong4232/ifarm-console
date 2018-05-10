@@ -119,7 +119,7 @@
                   <span class="custom-tree-node" slot-scope="{ node, data }">
                     <span>{{ data.label }}</span>
                     <div style="margin-right: 100px;">
-                      <el-checkbox-group v-model="roleDistributeStore">
+                      <el-checkbox-group v-model="roleChecked">
                         <el-checkbox v-for="item in data.permissions"  :label="item.tid" :key="item.tid">{{item.permissionName}}</el-checkbox>
                       </el-checkbox-group>
                     </div>
@@ -175,9 +175,10 @@
                 },
                 permissionDialogVisible: false,
                 distributeStore: {},
-                roleDistributeStore: [],
-                roleResources: [],
-                rolePermissions: [],
+                roleChecked: [],
+                roleResourceChanges: [],
+                roleResourcesSrc: [],
+                rolePermissionsSrc: [],
                 props: {
                     tid:'',
                     code:'',
@@ -188,6 +189,10 @@
         },
         methods: {
             handleCheckChange(data, checked){
+                console.log(data);
+                if (checked) {
+                    roleResourceChanges.push(data.tid);
+                }
             },
             handleNodeClick(data, node) {
             },
@@ -203,11 +208,10 @@
                 this.$http.get(this.$global.remote().findRoleDistributeResource, {roleId:roleId}, response => {
                     if (this.$tools.isNotEmpty(response.result)) {
                         let roleDistributeSrc = response.result;
-                        this.handlePermissionItem(roleDistributeSrc, this.roleResources, this.rolePermissions);
-                        this.roleDistributeStore = this.rolePermissions;
-                        this.handleResourceItem(this.distributeStore, this.roleResources);
+                        this.handlePermissionItem(roleDistributeSrc, this.roleResourcesSrc, this.rolePermissionsSrc);
+                        this.roleChecked = this.rolePermissionsSrc;
+                        this.handleResourceItem(this.distributeStore, this.roleResourcesSrc);
                     }
-
                 }, fail => {
                     this.$message.error(fail.message);
                 });
@@ -237,7 +241,7 @@
                 })
             },
             handlePermissionSubmit(){
-                console.log(this.roleDistributeStore);
+                console.log(this.roleChecked);
             },
             closePermissionDialog(){
                 this.permissionDialogVisible = false;
