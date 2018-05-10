@@ -119,7 +119,7 @@
                   <span class="custom-tree-node" slot-scope="{ node, data }">
                     <span>{{ data.label }}</span>
                     <div style="margin-right: 100px;">
-                      <el-checkbox-group v-model="roleChecked">
+                      <el-checkbox-group v-model="rolePermissionChecked">
                         <el-checkbox v-for="item in data.permissions"  :label="item.tid" :key="item.tid">{{item.permissionName}}</el-checkbox>
                       </el-checkbox-group>
                     </div>
@@ -175,23 +175,40 @@
                 },
                 permissionDialogVisible: false,
                 distributeStore: {},
-                roleChecked: [],
-                roleResourceChanges: [],
+                rolePermissionChecked: [],
                 roleResourcesSrc: [],
                 rolePermissionsSrc: [],
+                resourceTreeInit: false,
                 props: {
                     tid:'',
                     code:'',
                     label:'',
-                    isLeaf:''
+                    isLeaf:'',
+                    permissions:[]
                 }
             }
         },
         methods: {
             handleCheckChange(data, checked){
-                console.log(data);
-                if (checked) {
-                    roleResourceChanges.push(data.tid);
+                if (this.resourceTreeInit) {
+                    console.log(data);
+                    console.log(checked);
+                    if (checked) {
+                        if (this.$tools.isNotEmpty(data.permissions)) {
+                            data.permissions.forEach((item) => {
+                                if (data.label == item.permissionName) {
+                                    this.rolePermissionChecked.push(item.tid);
+                                }
+                            })
+                        }
+                    } else {
+                        // console.log(data.permissions);
+                        data.permissions.forEach((item) => {
+                            this.$tools.removeArrayItemByValue(this.rolePermissionChecked, item.tid);
+                        })
+                        // console.log(this.rolePermissionChecked);
+                        console.log('unchecked');
+                    }
                 }
             },
             handleNodeClick(data, node) {
@@ -209,7 +226,7 @@
                     if (this.$tools.isNotEmpty(response.result)) {
                         let roleDistributeSrc = response.result;
                         this.handlePermissionItem(roleDistributeSrc, this.roleResourcesSrc, this.rolePermissionsSrc);
-                        this.roleChecked = this.rolePermissionsSrc;
+                        this.rolePermissionChecked = this.rolePermissionsSrc;
                         this.handleResourceItem(this.distributeStore, this.roleResourcesSrc);
                     }
                 }, fail => {
@@ -241,9 +258,10 @@
                 })
             },
             handlePermissionSubmit(){
-                console.log(this.roleChecked);
+                console.log(this.rolePermissionChecked);
             },
             closePermissionDialog(){
+                this.resourceTreeInit = false;
                 this.permissionDialogVisible = false;
             },
             //role
