@@ -109,8 +109,10 @@
             center>
             <el-tree
                 ref="resourceTree"
+                :default-checked-keys="roleResourceChecked"
                 :data="distributeStore"
                 :props="props"
+                :check-strictly="true"
                 show-checkbox
                 node-key="tid"
                 @check-change="handleCheckChange"
@@ -176,9 +178,9 @@
                 permissionDialogVisible: false,
                 distributeStore: {},
                 rolePermissionChecked: [],
+                roleResourceChecked: [],
                 roleResourcesSrc: [],
                 rolePermissionsSrc: [],
-                resourceTreeInit: false,
                 props: {
                     tid:'',
                     code:'',
@@ -190,25 +192,18 @@
         },
         methods: {
             handleCheckChange(data, checked){
-                if (this.resourceTreeInit) {
-                    console.log(data);
-                    console.log(checked);
-                    if (checked) {
-                        if (this.$tools.isNotEmpty(data.permissions)) {
-                            data.permissions.forEach((item) => {
-                                if (data.label == item.permissionName) {
-                                    this.rolePermissionChecked.push(item.tid);
-                                }
-                            })
-                        }
-                    } else {
-                        // console.log(data.permissions);
+                if (checked) {
+                    if (this.$tools.isNotEmpty(data.permissions)) {
                         data.permissions.forEach((item) => {
-                            this.$tools.removeArrayItemByValue(this.rolePermissionChecked, item.tid);
+                            if (data.label == item.permissionName) {
+                                this.rolePermissionChecked.push(item.tid);
+                            }
                         })
-                        // console.log(this.rolePermissionChecked);
-                        console.log('unchecked');
                     }
+                } else {
+                    data.permissions.forEach((item) => {
+                        this.$tools.removeArrayItemByValue(this.rolePermissionChecked, item.tid);
+                    })
                 }
             },
             handleNodeClick(data, node) {
@@ -221,19 +216,21 @@
                 }
                 let roleId = this.multipleSelection[0].tid;
                 this.distributeStore = this.$global.getDistributeStore();
-                this.permissionDialogVisible = true;
+
                 this.$http.get(this.$global.remote().findRoleDistributeResource, {roleId:roleId}, response => {
                     if (this.$tools.isNotEmpty(response.result)) {
                         let roleDistributeSrc = response.result;
                         this.handlePermissionItem(roleDistributeSrc, this.roleResourcesSrc, this.rolePermissionsSrc);
                         this.rolePermissionChecked = this.rolePermissionsSrc;
-                        this.handleResourceItem(this.distributeStore, this.roleResourcesSrc);
+                        this.roleResourceChecked = this.roleResourcesSrc;
                     }
+                    this.permissionDialogVisible = true;
                 }, fail => {
                     this.$message.error(fail.message);
                 });
             },
             handleResourceItem(store, roleResources) {
+                //暂时不用这种方式
                 store.forEach((item) => {
                     if (roleResources.indexOf(item.tid) >= 0) {
                         let node = this.$refs.resourceTree.getNode(item.tid);
@@ -258,10 +255,14 @@
                 })
             },
             handlePermissionSubmit(){
-                console.log(this.rolePermissionChecked);
+                let roleId = this.multipleSelection[0].tid;
+                this.$http.post(this.$global.remote().distributePermission,{roleId:roleId,ids:this.rolePermissionChecked}, response => {
+                    this.closePermissionDialog();
+                }, fail => {
+                    this.$message.error(fail.message);
+                })
             },
             closePermissionDialog(){
-                this.resourceTreeInit = false;
                 this.permissionDialogVisible = false;
             },
             //role

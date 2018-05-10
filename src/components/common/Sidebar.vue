@@ -25,6 +25,7 @@
         },
         methods: {
             handleOpen(index, indexPath){
+                this.subItemCopy = [];
                 let subMenu = this.menuData.get(index);
                 if (this.$tools.isEmpty(subMenu)) {
                     this.$http.get(this.$global.remote().userMenu, {parentCode: index}, response => {

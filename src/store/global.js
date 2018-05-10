@@ -51,6 +51,7 @@ global.remoteUrl = {
     permissionDelete: '/resource/permission/delete',
     findAllDistributeResource: '/resource/findAllDistributeResource',
     findRoleDistributeResource: '/resource/findRoleDistributeResource',
+    distributePermission: '/resource/distributePermission',
 }
 
 /**
