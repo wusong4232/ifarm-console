@@ -2,10 +2,10 @@
     <div class="sidebar">
         <el-menu :default-active="onRoutes" @open="handleOpen" class="el-menu-vertical-demo" background-color="#324157" text-color="#fff"
                  unique-opened router>
-            <template v-for="item in itemsCopy">
+            <template v-for="(item, k) in menusCopy.menuData">
                 <el-submenu :index="item.resourceCode"><!--二级菜单-->
                     <template slot="title"><i :class="item.nodeIcon"></i>{{ item.resourceName }}</template>
-                    <el-menu-item v-for="(subItem,i) in subItemCopy" :key="i" :index="subItem.router">{{ subItem.resourceName }}
+                    <el-menu-item v-for="(subItem,i) in item.menuItems" :key="i" :index="subItem.router" >{{ subItem.resourceName }}
                     </el-menu-item>
                 </el-submenu>
             </template>
@@ -19,20 +19,33 @@
     export default {
         data(){
           return {
-              menuData: new Map(),
-              subItemCopy: []
+              menus: [{
+                  version: 1,
+                  menuData: []
+              }],
+              menuIndex: new Map(),
+              menuCache: new Map(),
           }
         },
         methods: {
             handleOpen(index, indexPath){
-                this.subItemCopy = [];
-                let subMenu = this.menuData.get(index);
+                let subMenu = this.menuCache.get(index);
+                let subMenuIndex = this.menuIndex.get(index);
                 if (this.$tools.isEmpty(subMenu)) {
                     this.$http.get(this.$global.remote().userMenu, {parentCode: index}, response => {
                         subMenu = response.result;
                         if (this.$tools.isNotEmpty(subMenu)) {
-                            this.menuData.set(index, subMenu);
-                            this.subItemCopy = subMenu;
+                            this.menuCache.set(index, subMenu);
+                            this.menus[0].menuData[subMenuIndex].menuItems = subMenu;
+                            /**
+                             * 需要改动menus数据才会执行menusCopy
+                             * 改变menus元素属性不能触发，所以这里通过改变menus元素实现，后期优化
+                             * 第一次加载菜单还有问题
+                             */
+                            this.menus.push({
+                                version:0,
+                                menuData:[]
+                            })
 
                             let routers = [];
                             RouterUtils(routers,subMenu,'menu');
@@ -43,7 +56,7 @@
                         this.message.error(fail.message);
                     });
                 } else {
-                    this.subItemCopy = subMenu;
+                    this.menus[subMenuIndex].menuItems = subMenu;
                 }
             }
         },
@@ -51,9 +64,19 @@
             onRoutes() {
                 return this.$route.path.split('/')[2];
             },
-            itemsCopy(){
-                return this.$store.state.userMenu;
+            menusCopy(){
+                return this.menus[0];
             }
+        },
+        watch:{
+        },
+        mounted(){
+            let menusTemp = this.$store.state.userMenu;
+            for (let i = 0, len = menusTemp.length; i < len; i++){
+                menusTemp[i].menuItems = [];
+                this.menuIndex.set(menusTemp[i].resourceCode, i);
+            }
+            this.menus[0].menuData =  menusTemp;
         }
     }
 </script>

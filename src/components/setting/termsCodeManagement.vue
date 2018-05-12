@@ -16,10 +16,10 @@
                 </el-form-item>
                 <br/>
                 <el-form-item >
-                    <el-button type="primary" @click="onSearch">查询</el-button>
-                    <el-button type="primary" @click="onAdd">新增</el-button>
-                    <el-button type="primary" @click="onUpdate" :disabled="updateDisable">修改</el-button>
-                    <el-button type="primary" @click="onDelete" :disabled="deleteDisable">删除</el-button>
+                    <el-button type="primary" @click="onSearch" v-show="buttons.query">查询</el-button>
+                    <el-button type="primary" @click="onAdd" v-show="buttons.add">新增</el-button>
+                    <el-button type="primary" @click="onUpdate" v-show="buttons.update" :disabled="updateDisable">修改</el-button>
+                    <el-button type="primary" @click="onDelete"v-show="buttons.delete" :disabled="deleteDisable">删除</el-button>
                 </el-form-item>
             </el-form>
         </div>
@@ -112,6 +112,12 @@
     export default {
         data() {
             return {
+                buttons: {
+                    query: false,
+                    add: false,
+                    update: false,
+                    delete: false,
+                },
                 searchFormData:{
                     termsCodeDTO : {
                         termsCode: '',
@@ -271,6 +277,13 @@
             activeItems(){
                 return this.$global.getTermsValueStore('DATA_STATUE');
             }
+        },
+        mounted(){
+            let userPermissions = this.$global.getUserPermissions();
+            this.buttons.query = userPermissions.indexOf(this.$global.remote().termsCodeList) >= 0;
+            this.buttons.add = userPermissions.indexOf(this.$global.remote().termsCodeSave) >= 0;
+            this.buttons.update = userPermissions.indexOf(this.$global.remote().termsCodeUpdate) >= 0;
+            this.buttons.delete = userPermissions.indexOf(this.$global.remote().termsCodeDelete) >= 0;
         }
     }
 </script>

@@ -11,6 +11,7 @@ global.remoteUrl = {
     //user manage
     userMenu:'/userMenu',
     userInfo: '/userInfo',
+    userPermission: '/userPermission',
     userList: '/user/list',
     userFind: '/user/find',
     userDelete: '/user/delete',
@@ -107,6 +108,19 @@ let loadRoleStore = function () {
     })
 }
 
+let loadUserPermission = function () {
+    let userName = JSON.parse(sessionStorage.getItem('userInfo')).userName;
+    apiAxios.get(global.remoteUrl.userPermission, {userName:userName}, response => {
+        let store = {};
+        if (tools.isNotEmpty(response.result)) {
+            store = response.result;
+        }
+        global.userPermission = store;
+    }, fail => {
+        Message.error(fail.message);
+    })
+};
+
 let loadDistributeResourceStore = function () {
     apiAxios.get(global.remoteUrl.findAllDistributeResource, null, response => {
         let store = {};
@@ -190,6 +204,18 @@ export default {
     },
     getDistributeStore() {
         return global.distributeStore;
+    },
+    flashUserPermission() {
+        loadUserPermission();
+    },
+    setUserPermissions(userPermissions) {
+        global.userPermission = userPermissions;
+    },
+    getUserPermissions() {
+        if (tools.isEmpty(global.userPermission)) {
+            loadUserPermission();
+        }
+        return global.userPermission;
     }
 
 }

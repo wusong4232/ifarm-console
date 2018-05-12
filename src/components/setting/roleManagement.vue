@@ -16,11 +16,11 @@
                 </el-form-item>
                 <br/>
                 <el-form-item >
-                    <el-button type="primary" @click="onSearch">查询</el-button>
-                    <el-button type="primary" @click="onAdd">新增</el-button>
-                    <el-button type="primary" @click="onUpdate" :disabled="updateDisable">修改</el-button>
-                    <el-button type="primary" @click="onDelete" :disabled="deleteDisable">删除</el-button>
-                    <el-button type="primary" @click="onDistributePermission" :disabled="disDisable">分配权限</el-button>
+                    <el-button type="primary" @click="onSearch" v-show="buttons.query">查询</el-button>
+                    <el-button type="primary" @click="onAdd" v-show="buttons.add">新增</el-button>
+                    <el-button type="primary" @click="onUpdate" v-show="buttons.update" :disabled="updateDisable">修改</el-button>
+                    <el-button type="primary" @click="onDelete" v-show="buttons.delete" :disabled="deleteDisable">删除</el-button>
+                    <el-button type="primary" @click="onDistributePermission" v-show="buttons.distribute" :disabled="disDisable">分配权限</el-button>
                 </el-form-item>
             </el-form>
         </div>
@@ -109,9 +109,9 @@
             center>
             <el-tree
                 ref="resourceTree"
-                :default-checked-keys="roleResourceChecked"
                 :data="distributeStore"
                 :props="props"
+                :default-checked-keys="roleResourceChecked"
                 :check-strictly="true"
                 show-checkbox
                 node-key="tid"
@@ -139,6 +139,13 @@
     export default {
         data() {
             return {
+                buttons: {
+                    query: false,
+                    add: false,
+                    update: false,
+                    delete: false,
+                    distribute: false
+                },
                 searchFormData:{
                     roleInfoDTO : {
                         roleCode: '',
@@ -225,6 +232,10 @@
                         this.roleResourceChecked = this.roleResourcesSrc;
                     }
                     this.permissionDialogVisible = true;
+                    try {
+                        this.$refs.resourceTree.setCheckedKeys(this.roleResourceChecked);
+                    } catch (e) {
+                    }
                 }, fail => {
                     this.$message.error(fail.message);
                 });
@@ -257,13 +268,22 @@
             handlePermissionSubmit(){
                 let roleId = this.multipleSelection[0].tid;
                 this.$http.post(this.$global.remote().distributePermission,{roleId:roleId,ids:this.rolePermissionChecked}, response => {
+                    this.$global.flashUserPermission();
                     this.closePermissionDialog();
                 }, fail => {
                     this.$message.error(fail.message);
                 })
             },
             closePermissionDialog(){
+                this.rolePermissionChecked = [];
+                this.roleResourceChecked = [];
+                this.rolePermissionsSrc = [];
+                this.roleResourcesSrc = [];
+                // this.resetTreeChecked();
                 this.permissionDialogVisible = false;
+            },
+            resetTreeChecked() {
+                this.$refs.resourceTree.setCheckedKeys([]);
             },
             //role
             onSearch() {
@@ -390,6 +410,14 @@
             activeItems(){
                 return this.$global.getTermsValueStore('DATA_STATUE');
             }
+        },
+        mounted(){
+            let userPermissions = this.$global.getUserPermissions();
+            this.buttons.query = userPermissions.indexOf(this.$global.remote().roleList) >= 0;
+            this.buttons.add = userPermissions.indexOf(this.$global.remote().roleAdd) >= 0;
+            this.buttons.update = userPermissions.indexOf(this.$global.remote().roleUpdate) >= 0;
+            this.buttons.delete = userPermissions.indexOf(this.$global.remote().roleDelete) >= 0;
+            this.buttons.distribute = userPermissions.indexOf(this.$global.remote().distributePermission) >= 0;
         }
     }
 </script>

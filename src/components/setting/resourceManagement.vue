@@ -3,12 +3,12 @@
         <div class="form-box">
             <el-form :inline="true" size="mini">
                 <el-form-item >
-                    <el-button type="primary" @click="onAdd">新增菜单</el-button>
-                    <el-button type="primary" @click="onUpdate" :disabled="updateDisable">修改菜单</el-button>
+                    <el-button type="primary" @click="onAdd" v-show="buttons.add">新增菜单</el-button>
+                    <el-button type="primary" @click="onUpdate" v-show="buttons.update" :disabled="updateDisable">修改菜单</el-button>
                     <!--<el-button type="primary" @click="onDelete" :disabled="deleteDisable">删除</el-button>-->
-                    <el-button type="primary" @click="onPermissionAdd" :disabled="addPermissionDisable">新增权限</el-button>
-                    <el-button type="primary" @click="onPermissionUpdate" :disabled="updatePermissionDisable">修改权限</el-button>
-                    <el-button type="primary" @click="onPermissionDelete" :disabled="deletePermissionDisable">删除权限</el-button>
+                    <el-button type="primary" @click="onPermissionAdd" v-show="buttons.perAdd" :disabled="addPermissionDisable">新增权限</el-button>
+                    <el-button type="primary" @click="onPermissionUpdate" v-show="buttons.perUpdate" :disabled="updatePermissionDisable">修改权限</el-button>
+                    <el-button type="primary" @click="onPermissionDelete" v-show="buttons.perDelete" :disabled="deletePermissionDisable">删除权限</el-button>
                 </el-form-item>
             </el-form>
         </div>
@@ -191,6 +191,13 @@
     export default {
         data() {
             return {
+                buttons: {
+                    add: false,
+                    update: false,
+                    perAdd: false,
+                    perUpdate: false,
+                    perDelete: false
+                },
                 checkStrictly: true,
                 defaultExpand: false,
                 updateDisable: true,
@@ -638,7 +645,12 @@
             }
         },
         mounted(){
-
+            let userPermissions = this.$global.getUserPermissions();
+            this.buttons.add = userPermissions.indexOf(this.$global.remote().resourceAdd) >= 0;
+            this.buttons.update = userPermissions.indexOf(this.$global.remote().resourceUpdate) >= 0;
+            this.buttons.perAdd = userPermissions.indexOf(this.$global.remote().permissionAdd) >= 0;
+            this.buttons.perUpdate = userPermissions.indexOf(this.$global.remote().permissionUpdate) >= 0;
+            this.buttons.perDelete = userPermissions.indexOf(this.$global.remote().permissionDelete) >= 0;
         }
     };
 </script>

@@ -96,6 +96,7 @@
                 this.$global.flashMenuSelectStore();
                 this.$global.flashRoleStore();
                 this.$global.flashDistributeStore();
+                this.$global.flashUserPermission();
             // }, 3000);
         }
     }

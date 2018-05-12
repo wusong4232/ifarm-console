@@ -41,7 +41,9 @@
                         this.clearStore();
                         //不需要router
                         // sessionStorage.removeItem('routers');
-                        this.$router.push('/login');
+                        // this.$router.push('/login');
+                        //flash
+                        window.location.reload();
                     });
                 } else if (command == 'userInfo') {
 

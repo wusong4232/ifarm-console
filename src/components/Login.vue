@@ -63,6 +63,7 @@
                         self.$cookie.set('userName',userInfo.userName,{expires:"30m"});
                         // self.$cookie.set('userInfo', JSON.stringify(userInfo));
                         // self.$cookie.set('userMenu', JSON.stringify(userMenu));
+                        this.$global.setUserPermissions(userInfo.permissions);
                         sessionStorage.setItem('userInfo', JSON.stringify(userInfo));
                         sessionStorage.setItem('userMenu', JSON.stringify(userMenu));
                         this.$store.commit("saveUserInfo", userInfo);

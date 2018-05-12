@@ -19,11 +19,11 @@
                 </el-form-item>
                 <br/>
                 <el-form-item >
-                    <el-button type="primary" @click="onSearch">查询</el-button>
-                    <el-button type="primary" @click="onAdd">新增</el-button>
-                    <el-button type="primary" @click="onUpdate" :disabled="updateDisable">修改</el-button>
-                    <el-button type="primary" @click="onDelete" :disabled="deleteDisable">删除</el-button>
-                    <el-button type="primary" @click="onDistributeRole" :disabled="disDisable">分配角色</el-button>
+                    <el-button type="primary" @click="onSearch" v-show="buttons.query">查询</el-button>
+                    <el-button type="primary" @click="onAdd" v-show="buttons.add">新增</el-button>
+                    <el-button type="primary" @click="onUpdate" v-show="buttons.update" :disabled="updateDisable">修改</el-button>
+                    <el-button type="primary" @click="onDelete" v-show="buttons.delete" :disabled="deleteDisable">删除</el-button>
+                    <el-button type="primary" @click="onDistributeRole" v-show="buttons.distribute" :disabled="disDisable">分配角色</el-button>
                 </el-form-item>
             </el-form>
         </div>
@@ -166,6 +166,13 @@
     export default {
         data() {
             return {
+                buttons: {
+                    query: false,
+                    add: false,
+                    update: false,
+                    delete: false,
+                    distribute: false
+                },
                 searchFormData:{
                     userInfoDTO : {
                         userName: '',
@@ -412,6 +419,14 @@
                 return this.$global.getTermsValueStore('DATA_STATUE');
             }
         },
+        mounted(){
+            let userPermissions = this.$global.getUserPermissions();
+            this.buttons.query = userPermissions.indexOf(this.$global.remote().userList) >= 0;
+            this.buttons.add = userPermissions.indexOf(this.$global.remote().userAdd) >= 0;
+            this.buttons.update = userPermissions.indexOf(this.$global.remote().userUpdate) >= 0;
+            this.buttons.delete = userPermissions.indexOf(this.$global.remote().userDelete) >= 0;
+            this.buttons.distribute = userPermissions.indexOf(this.$global.remote().distributeRole) >= 0;
+        }
     }
 </script>
 
