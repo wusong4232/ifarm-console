@@ -8,32 +8,24 @@
         <div class="ms-doc">
             <h3>README.md</h3>
             <article>
-                <h1>manage-system</h1>
-                <p>基于Vue.js 2.x系列 + Element UI 的后台管理系统解决方案</p>
+                <h1>后台管理系统</h1>
+                <p>后端基于SpringBoot + SpringMVC + Shiro，前端基于Vue.js 2.x系列 + Element UI 的后台管理系统解决方案</p>
                 <h2>前言</h2>
-                <p>之前在公司用了Vue + Element组件库做了个后台管理系统，基本很多组件可以直接引用组件库的，但是也有一些需求无法满足。像图片裁剪上传、富文本编辑器、图表等这些在后台管理系统中很常见的功能，就需要引用其他的组件才能完成。从寻找组件，到使用组件的过程中，遇到了很多问题，也积累了宝贵的经验。所以我就把开发这个后台管理系统的经验，总结成这个后台管理系统解决方案。</p>
-                <p>该方案作为一套多功能的后台框架模板，适用于绝大部分的后台管理系统（Web Management System）开发。基于vue.js,使用vue-cli脚手架快速生成项目目录，引用Element UI组件库，方便开发快速简洁好看的组件。分离颜色样式，支持手动切换主题色，而且很方便使用自定义主题色。</p>
+                <p>
+                    工作之余整理了SpringBoot整个常用框架的模板库[framework](https://github.com/lhrimperial/framework)，运用这个模板开发了一个基于粗粒度权限设计的管理后台[caiwei](https://github.com/lhrimperial/caiwei)，前端使用的是ExtJs。
+                    ExtJs属于比较重的前端框架，基于当下流行的几种前端框架，选择了Vue + ElementUI重新实现了一个后台管理系统，权限管理选用了Shiro 权限管理框架，并且对权限进行了细粒度的设计，控制到按钮。
+                    时间比较紧还有很多不完善和考虑不周全的地方，希望看到这份代码发现问题的可以给我留言，谢谢！
+                </p>
                 <h2>功能</h2>
-                <el-checkbox disabled checked>Element UI</el-checkbox>
-                <br>
-                <el-checkbox disabled checked>登录/注销</el-checkbox>
-                <br>
-                <el-checkbox disabled checked>表格</el-checkbox>
-                <br>
-                <el-checkbox disabled checked>表单</el-checkbox>
-                <br>
-                <el-checkbox disabled checked>图表</el-checkbox>
-                <br>
-                <el-checkbox disabled checked>富文本编辑器</el-checkbox>
-                <br>
-                <el-checkbox disabled checked>markdown编辑器</el-checkbox>
-                <br>
-                <el-checkbox disabled checked>图片拖拽/裁剪上传</el-checkbox>
-                <br>
-                <el-checkbox disabled checked>支持切换主题色</el-checkbox>
-                <br>
-                <el-checkbox disabled checked>列表拖拽排序</el-checkbox>
-                <br>
+                <p>
+                    系统设计了管理系统比较通用的几个模块
+                </p>
+                <ul>
+                    <li>用户管理</li>
+                    <li>角色管理</li>
+                    <li>菜单管理</li>
+                    。。。。。。
+                </ul>
             </article>
         </div>
 
