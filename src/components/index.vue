@@ -10,6 +10,7 @@
             <article>
                 <h1>后台管理系统</h1>
                 <p>后端基于SpringBoot + SpringMVC + Shiro，前端基于Vue.js 2.x系列 + Element UI 的后台管理系统解决方案</p>
+                <a href="https://github.com/lhrimperial" target="_blank">GitHub源码</a>
                 <h2>前言</h2>
                 <p>
                     工作之余整理了SpringBoot整个常用框架的模板库[framework](https://github.com/lhrimperial/framework)，运用这个模板开发了一个基于粗粒度权限设计的管理后台[caiwei](https://github.com/lhrimperial/caiwei)，前端使用的是ExtJs。
